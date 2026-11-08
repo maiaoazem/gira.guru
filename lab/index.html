@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>lab aberto · laborateliê</title>
+<meta name="description" content="O que o laborateliê testa, rascunha e compartilha: projetos em soft launch, construções em andamento e ferramentas abertas.">
+<meta property="og:title" content="lab aberto · laborateliê">
+<meta property="og:description" content="As ferramentas que o laborateliê usa e compartilha.">
+<meta name="theme-color" content="#fbf8f4">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap">
+<style>
+/* lab aberto · Design System Maia Oazem. Papel + tinta; cada ferramenta é uma capa LIV na sua cor. */
+:root{
+  --papel:#fbf8f4; --tinta:#141414; --cinza:#5b5754;
+  --rosa:#f6b4d0; --amarelo:#f9ea8c; --roxo:#cdb8f4;--verde:#b5e7c6;--azul:#bcd0fb;
+  --serif:"Cormorant Garamond", Garamond, "Times New Roman", serif;
+  --sans:"Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--papel);color:var(--tinta);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;font-variant-emoji:text}
+a{color:inherit;text-decoration:none;border-bottom:1px solid currentColor}
+a:hover{opacity:.6}
+p{margin:0}
+h1,h2{margin:0;font-weight:300;font-family:var(--serif)}
+:focus-visible{outline:1px solid var(--tinta);outline-offset:3px}
+.in{max-width:1360px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.fio{border:0;border-top:1px solid currentColor;margin:0}
+.meta{font-size:12px;letter-spacing:.09em;text-transform:uppercase}
+.cinza{color:var(--cinza)}
+
+.assin{display:flex;justify-content:space-between;align-items:center;gap:10px 22px;flex-wrap:wrap;padding-block:14px;font-size:15px}
+.assin .marca{display:flex;align-items:center;gap:12px;border:0}
+.acoes{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.acoes a{font-size:12px;letter-spacing:.09em;text-transform:uppercase;border:0}
+.idiomas{display:flex;gap:4px}
+.idiomas button{font:inherit;font-size:12px;letter-spacing:.09em;background:none;border:1px solid transparent;color:inherit;padding:4px 7px;cursor:pointer;line-height:1}
+.idiomas button[aria-pressed="true"]{border-color:currentColor}
+
+.topo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:end;padding-block:clamp(40px,7vw,96px) clamp(32px,5vw,56px)}
+.topo h1{font-size:clamp(60px,10vw,152px);line-height:.88;letter-spacing:-.025em}
+.topo h1 em{display:block;padding-left:clamp(0px,8vw,140px)}
+.topo .lede{font-family:var(--serif);font-size:clamp(21px,2.1vw,28px);line-height:1.3;max-width:30ch}
+
+.capas{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px 28px;padding-block:clamp(36px,5vw,64px) clamp(56px,8vw,104px)}
+.ferramenta{display:flex;flex-direction:column;gap:14px;min-width:0}
+.ferramenta > a{border:0;display:block}
+.ferramenta > a:hover{opacity:1}
+.capa{position:relative;aspect-ratio:5/7;max-width:100%;overflow:hidden;color:var(--tinta);transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.ferramenta > a:hover .capa,.ferramenta > a:focus-visible .capa{transform:translateY(-6px)}
+.capa.rosa{background:var(--rosa)} .capa.amarelo{background:var(--amarelo)} .capa.azul{background:var(--azul)} .capa.roxo{background:var(--roxo)} .capa.verde{background:var(--verde)}
+.capa svg{position:absolute;inset:0;width:100%;height:100%}
+.capa svg .l{fill:none;stroke:currentColor;stroke-width:1.4;vector-effect:non-scaling-stroke}
+.capa svg .s{fill:currentColor}
+.capa .fio-capa{position:absolute;left:7%;right:7%;border-top:1px solid currentColor}
+.capa .linha{position:absolute;left:7%;right:7%;display:flex;justify-content:space-between;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.capa .t{position:absolute;left:7%;right:7%;bottom:15%;font-family:var(--serif);font-weight:300;font-size:clamp(40px,4.6vw,68px);line-height:.9;letter-spacing:-.02em}
+.capa .t em{font-style:italic}
+.ficha{border-top:1px solid var(--tinta);padding-top:12px;display:flex;flex-direction:column;gap:8px}
+.ficha .nome{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.ficha .nome b{font-weight:400;font-family:var(--serif);font-size:26px;line-height:1.1}
+.ficha p{font-family:var(--serif);font-size:19px;line-height:1.4}
+.ficha .data{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--cinza)}
+.ficha .baixar{align-self:flex-start;display:inline-flex;align-items:center;gap:10px;margin-top:4px;padding:11px 16px;border:1px solid var(--tinta);background:var(--tinta);color:var(--papel);font-size:12px;letter-spacing:.09em;text-transform:uppercase;line-height:1}
+.ficha .baixar:hover{opacity:1;background:var(--papel);color:var(--tinta)}
+.ficha .baixar small{font-size:11px;letter-spacing:.06em;opacity:.7;text-transform:none}
+
+.secao{padding-block:clamp(36px,5vw,64px) clamp(24px,3vw,40px)}
+.secao .cab{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:end;padding-bottom:clamp(24px,3vw,36px)}
+.secao h2{font-size:clamp(44px,6vw,88px);line-height:.92;letter-spacing:-.02em}
+.secao .cab p{font-family:var(--serif);font-size:clamp(19px,1.8vw,24px);line-height:1.35;max-width:36ch}
+.projetos{list-style:none;padding:0;margin:0;border-top:1px solid var(--tinta)}
+.projeto{display:grid;grid-template-columns:56px minmax(0,1.1fr) minmax(0,1.6fr) minmax(0,1fr);gap:16px 28px;padding-block:22px 26px;border-bottom:1px solid var(--tinta);align-items:start}
+.projeto .n{font-family:var(--serif);font-style:italic;font-size:24px;line-height:1.2;color:#7a6200}
+.projeto h3{margin:0;font-family:var(--serif);font-weight:300;font-size:clamp(30px,3vw,44px);line-height:1;letter-spacing:-.015em}
+.projeto h3 a{border:0}
+.projeto .txt{font-family:var(--serif);font-size:19px;line-height:1.4}
+.projeto .sel{display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.4}
+.projeto .sel .meta{color:var(--cinza)}
+.projeto.leve{grid-template-columns:56px minmax(0,1.1fr) minmax(0,2.6fr)}
+@media (max-width:900px){
+  .secao .cab{grid-template-columns:1fr;gap:16px}
+  .projeto,.projeto.leve{grid-template-columns:40px minmax(0,1fr)}
+  .projeto .txt,.projeto .sel{grid-column:2}
+}
+
+.licenca{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:40px;padding-block:22px 28px;border-top:1px solid var(--tinta)}
+.licenca p{font-family:var(--serif);font-size:20px;line-height:1.4;max-width:56ch}
+footer{background:var(--tinta);color:var(--papel)}
+footer .in{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:24px;align-items:center}
+footer em{font-family:var(--serif);font-size:20px}
+
+@media (max-width:900px){
+  .capas{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .topo,.licenca{grid-template-columns:1fr;gap:20px}
+}
+@media (max-width:560px){ .capas{grid-template-columns:1fr} .capa{max-width:420px} }
+@media (prefers-reduced-motion:reduce){ .capa{transition:none} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="fagulha" viewBox="0 0 100 100"><path fill="currentColor" d="M53 8L91 72H15Z"/><path fill="currentColor" d="M43 94L9 36H77Z"/></symbol>
+</defs></svg>
+
+<header class="in">
+  <hr class="fio">
+  <div class="assin">
+    <a class="marca" href="/"><svg width="22" height="22" viewBox="0 0 100 100" aria-hidden="true"><use href="#fagulha"/></svg><span data-en="laborateliê · open lab">laborateliê · lab aberto</span></a>
+    <span class="acoes">
+      <a href="/">Maia Oazem</a>
+      <span class="idiomas" role="group" aria-label="Idioma / Language">
+        <button type="button" data-lang="pt" aria-pressed="true" lang="pt-BR">PT-BR</button>
+        <button type="button" data-lang="en" aria-pressed="false" lang="en">EN</button>
+      </span>
+    </span>
+  </div>
+  <hr class="fio">
+  <div class="topo">
+    <h1 data-en="open <em>lab</em>">lab <em>aberto</em></h1>
+    <p class="lede" data-en="What the laborateliê tests, drafts and shares: projects in soft launch, works in progress and open tools.">O que o laborateliê testa, rascunha e compartilha: projetos em soft launch, construções em andamento e ferramentas abertas.</p>
+  </div>
+</header>
+
+<main class="in">
+  <!-- SOFT LAUNCH -->
+  <section class="secao" aria-labelledby="t-soft">
+    <div class="cab">
+      <h2 id="t-soft" data-en="soft <em>launch</em>">soft <em>launch</em></h2>
+      <p data-en="Projects being shared and tested for expansion.">Projetos em divulgação e testagem para expansão.</p>
+    </div>
+    <ul class="projetos">
+      <li class="projeto">
+        <span class="n">(01)</span>
+        <h3><a href="https://contexto.gira.guru" data-en="Clube de <em>Contexto</em>">Clube de <em>Contexto</em></a></h3>
+        <p class="txt" data-en="<em>a mind gym.</em> How do we protect the critical-creative mind in the age of AI? An ongoing corporate program of reading, debate and elaboration that develops critical thinking, creativity and skilled use of AI in teams. The process combines deep reading, open debate, handwriting and the building of authored contexts for AI, strengthening both halves of this new corporate duo, the bionic human."><em>academia da mente.</em> Como proteger a mente crítico-criativa na era da IA? Um programa corporativo contínuo de leitura, debate e elaboração para desenvolver pensamento crítico, criatividade e uso qualificado da IA nas equipes. O processo combina leitura profunda, debate aberto, escrita manual e a construção de contextos autorais para a IA, potencializando as duas partes dessa nova dupla corporativa, o humano biônico.</p>
+        <div class="sel"><span class="meta" data-en="selection">seleção</span><span data-en="BDA 2026 · Interactivity, Student Projects">BDA 2026 · Interatividade, Projetos Estudantis</span><span data-en="as Neomaqueerismo e os Cacocris, born in the Futures Thinking postgraduate program at PUC">como Neomaqueerismo e os Cacocris, nascido na pós em Futures Thinking da PUC</span></div>
+      </li>
+      <li class="projeto">
+        <span class="n">(02)</span>
+        <h3 data-en="Polícia <em>Temporal</em>">Polícia <em>Temporal</em></h3>
+        <p class="txt" data-en="A design fiction podcast series. Each episode follows Suzana, an agent who catalogues artifacts arriving from the future without fully understanding what she holds. The bureaucracy of the catalogue is the method: faced with possible futures, a call to record, to find them strange, and to ask what they say about today.">Uma série de podcast em design fiction. Cada episódio narra o encontro de Suzana, uma agente que cataloga artefatos vindos do futuro sem compreender inteiramente o que tem nas mãos. A burocracia do catálogo é o método: diante dos futuros possíveis, um chamado para registrar, estranhar e perguntar o que aquilo diz sobre hoje.</p>
+        <div class="sel"><span class="meta" data-en="selection">seleção</span><span data-en="BDA 2026 · Future Design, Concept">BDA 2026 · Design Futuro, Conceito</span></div>
+      </li>
+      <li class="projeto">
+        <span class="n">(03)</span>
+        <h3 data-en="PFI · Potencial Financeiro de <em>Inovação</em>">PFI · Potencial Financeiro de <em>Inovação</em></h3>
+        <p class="txt" data-en="A system that turns hypotheses born in futures exploration into investment decisions in financial language: how much it costs to reduce their uncertainties, and how much value each test releases. MVPs stop being minimum products and become Minimum Valuable Proofs.">Um sistema que traduz hipóteses nascidas na exploração de futuros em decisões de investimento com linguagem financeira: quanto custa reduzir as incertezas e quanto valor cada teste libera. As MVPs deixam de ser produtos mínimos e viram Minimum Valuable Proofs.</p>
+        <div class="sel"><span class="meta" data-en="selection">seleção</span><span data-en="BDA 2026 · Future Design, Innovation">BDA 2026 · Design Futuro, Inovação</span><span data-en="with Verônica Merege">com Verônica Merege</span></div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- EM ELABORAÇÃO -->
+  <section class="secao" aria-labelledby="t-elab">
+    <div class="cab">
+      <h2 id="t-elab" data-en="in <em>progress</em>">em <em>elaboração</em></h2>
+      <p data-en="Drafts and constructions of the laborateliê.">Rascunhos e construções do laborateliê.</p>
+    </div>
+    <ul class="projetos">
+      <li class="projeto leve">
+        <span class="n">(04)</span>
+        <h3>VMM</h3>
+        <p class="txt" data-en="A creative duo with Verônica Merege, structuring branded content, creative consulting and facilitation projects for innovation in technology.">Duo criativo com Verônica Merege, estruturando projetos de branded content, consultoria criativa e facilitação para inovação em tecnologia.</p>
+      </li>
+      <li class="projeto leve">
+        <span class="n">(05)</span>
+        <h3 data-en="Magical realism <em>novel</em>">Livro de realismo <em>mágico</em></h3>
+        <p class="txt" data-en="A fiction about hope in times of war, and a family crossed by its encounter with a magic lamp.">Narrativa ficcional sobre esperança em tempos de guerra e uma família atravessada pelo encontro com uma lâmpada mágica.</p>
+      </li>
+      <li class="projeto leve">
+        <span class="n">(06)</span>
+        <h3 data-en="Futures of Cybersecurity in Capital <em>Markets</em>">Futuros da Cibersegurança no Mercado de <em>Capitais</em></h3>
+        <p class="txt" data-en="A project in partnership with Echos, a lab of desirable futures, and ANBIMA, to be launched in 2027.">Projeto em parceria com a Echos, laboratório de futuros desejáveis, e a ANBIMA, para lançamento em 2027.</p>
+      </li>
+    </ul>
+  </section>
+
+  <div class="secao" style="padding-bottom:0">
+    <div class="cab" style="padding-bottom:0">
+      <h2 data-en="open <em>tools</em>">ferramentas <em>abertas</em></h2>
+      <p data-en="The tools the laborateliê uses and shares, in use and under construction.">As ferramentas que o laborateliê usa e compartilha, em uso e em construção.</p>
+    </div>
+  </div>
+  <hr class="fio" style="margin-top:clamp(24px,3vw,36px)">
+  <div class="assin meta"><span data-en="tools">ferramentas</span><span>5</span></div>
+  <hr class="fio">
+  <ul class="capas">
+    <!-- MARCA · rosa -->
+    <li class="ferramenta">
+      <a href="/lab/marca/" aria-label="marca">
+        <div class="capa rosa">
+          <svg viewBox="0 0 100 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path class="l" d="M30 16L72 58L30 100L-12 58Z"/><path class="l" d="M70 16L112 58L70 100L28 58Z"/>
+            <path class="s" d="M28 58L50 36L72 58L50 80Z"/>
+          </svg>
+          <div class="linha" style="top:6%"><span data-en="tool">ferramenta</span><span>01</span></div>
+          <div class="fio-capa" style="top:10.5%"></div>
+          <div class="t">/<em>marca</em></div>
+          <div class="fio-capa" style="bottom:10.5%"></div>
+          <div class="linha" style="bottom:6%"><span>laborateliê</span><span>gira.guru</span></div>
+        </div>
+      </a>
+      <div class="ficha">
+        <div class="nome"><b>/marca</b><span class="data" data-en="1 Nov 2026">1 nov. 2026</span></div>
+        <p data-en="The brand of Maia Oazem and the laborateliê in one place: logos, colors, elements, structures, short bio and press photos.">A marca de Maia Oazem e do laborateliê num só lugar: logos, cores, elementos, estruturas, minibio e fotos para imprensa.</p>
+      </div>
+    </li>
+
+    <!-- PRENSA · amarelo -->
+    <li class="ferramenta">
+      <a href="/lab/prensa/" aria-label="prensa">
+        <div class="capa amarelo">
+          <svg viewBox="0 0 100 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path class="l" d="M14 50H58V94H14Z"/><circle class="l" cx="58" cy="50" r="26"/>
+            <path class="s" d="M58 50H32A26 26 0 0 0 58 76Z"/>
+          </svg>
+          <div class="linha" style="top:6%"><span data-en="tool">ferramenta</span><span>02</span></div>
+          <div class="fio-capa" style="top:10.5%"></div>
+          <div class="t">/<em data-en="press">prensa</em></div>
+          <div class="fio-capa" style="bottom:10.5%"></div>
+          <div class="linha" style="bottom:6%"><span>laborateliê</span><span>gira.guru</span></div>
+        </div>
+      </a>
+      <div class="ficha">
+        <div class="nome"><b>/prensa</b><span class="data" data-en="1 Nov 2026">1 nov. 2026</span></div>
+        <p data-en="An image press: it turns photographs into monochrome halftone, in the colors of the Design System.">Uma prensa de imagens: transforma fotografias em meio-tom monocromático, nas cores do Design System.</p>
+      </div>
+    </li>
+
+    <!-- PROJETOR · azul -->
+    <li class="ferramenta">
+      <a href="/lab/projetor/" aria-label="projetor">
+        <div class="capa azul">
+          <svg viewBox="0 0 100 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path class="l" d="M-4 22V102L58 62Z"/><path class="l" d="M36 22V102L98 62Z"/>
+            <path class="s" d="M36 47.8L58 62L36 76.2Z"/>
+          </svg>
+          <div class="linha" style="top:6%"><span data-en="tool">ferramenta</span><span>03</span></div>
+          <div class="fio-capa" style="top:10.5%"></div>
+          <div class="t">/<em data-en="projector">projetor</em></div>
+          <div class="fio-capa" style="bottom:10.5%"></div>
+          <div class="linha" style="bottom:6%"><span>laborateliê</span><span>gira.guru</span></div>
+        </div>
+      </a>
+      <div class="ficha">
+        <div class="nome"><b>/projetor</b><span class="data" data-en="2 Nov 2026">2 nov. 2026</span></div>
+        <p data-en="A tool for putting together reels of speculative artifacts.">Uma ferramenta para montar reels de artefatos especulativos.</p>
+      </div>
+    </li>
+
+    <!-- ENCONTROS · roxo -->
+    <li class="ferramenta">
+      <a href="/lab/encontros/" aria-label="encontros">
+        <div class="capa roxo">
+          <svg viewBox="0 0 100 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <circle class="l" cx="34" cy="62" r="30"/><circle class="l" cx="66" cy="62" r="30"/>
+            <path class="s" d="M50 36.6A30 30 0 0 1 50 87.4A30 30 0 0 1 50 36.6Z"/>
+          </svg>
+          <div class="linha" style="top:6%"><span data-en="tool">ferramenta</span><span>04</span></div>
+          <div class="fio-capa" style="top:10.5%"></div>
+          <div class="t">/<em data-en="encounters">encontros</em></div>
+          <div class="fio-capa" style="bottom:10.5%"></div>
+          <div class="linha" style="bottom:6%"><span>laborateliê</span><span>gira.guru</span></div>
+        </div>
+      </a>
+      <div class="ficha">
+        <div class="nome"><b>/encontros</b><span class="data" data-en="5 Nov 2026">5 nov. 2026</span></div>
+        <p data-en="An abstract image generator: pairs of shapes that meet, with structure sliders (scale, overlap, dispersion, rotation and stroke).">Um gerador de imagens abstratas: pares de formas que se encontram, com sliders de estrutura (escala, sobreposição, dispersão, giro e traço).</p>
+      </div>
+    </li>
+
+    <!-- ABSTRATO · verde -->
+    <li class="ferramenta">
+      <a href="/lab/abstrato/" aria-label="abstrato">
+        <div class="capa verde">
+          <svg viewBox="0 0 100 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path class="l" d="M50 18L82 74H18Z"/><path class="l" d="M50 46L82 102H18Z"/>
+            <path class="s" d="M50 46L66 74H34Z"/>
+          </svg>
+          <div class="linha" style="top:6%"><span data-en="tool">ferramenta</span><span>05</span></div>
+          <div class="fio-capa" style="top:10.5%"></div>
+          <div class="t">/<em data-en="abstract">abstrato</em></div>
+          <div class="fio-capa" style="bottom:10.5%"></div>
+          <div class="linha" style="bottom:6%"><span>laborateliê</span><span>gira.guru</span></div>
+        </div>
+      </a>
+      <div class="ficha">
+        <div class="nome"><b>/abstrato</b><span class="data" data-en="5 Nov 2026">5 nov. 2026</span></div>
+        <p data-en="Form studies: abstract compositions with primary shapes, intersections and free gestures, in the inks and meanings of the Design System.">Estudos de forma: composições abstratas com formas primárias, intersecções e gestos livres, nas tintas e nos sentidos do Design System.</p>
+      </div>
+    </li>
+  </ul>
+
+  <!-- DESIGN SYSTEMS GERADOS POR IA -->
+  <div class="secao" style="padding-bottom:0">
+    <div class="cab" style="padding-bottom:0">
+      <h2 data-en="AI-generated <em>design systems</em>">design systems <em>gerados por IA</em></h2>
+      <p data-en="Complete visual systems made with AI, each in a single .md file for you to take to your own AIs: principles, tokens, typography, components and icons.">Sistemas visuais completos feitos com IA, cada um num único arquivo .md para você levar para as suas IAs: princípios, tokens, tipografia, componentes e ícones.</p>
+    </div>
+  </div>
+  <hr class="fio" style="margin-top:clamp(24px,3vw,36px)">
+  <div class="assin meta"><span>design systems</span><span>2</span></div>
+  <hr class="fio">
+  <ul class="capas">
+    <!-- SUN//FLORA · azul -->
+    <li class="ferramenta">
+      <a href="/lab/design-systems/sunflora/" aria-label="SUN//FLORA">
+        <div class="capa azul">
+          <svg viewBox="0 0 100 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs><clipPath id="sf-globo"><circle cx="50" cy="62" r="24"/></clipPath></defs>
+            <circle class="l" cx="50" cy="62" r="24"/>
+            <ellipse class="l" cx="50" cy="62" rx="48" ry="13" transform="rotate(-26 50 62)"/>
+            <ellipse class="s" cx="50" cy="62" rx="48" ry="13" transform="rotate(-26 50 62)" clip-path="url(#sf-globo)"/>
+          </svg>
+          <div class="linha" style="top:6%"><span>design system</span><span>01</span></div>
+          <div class="fio-capa" style="top:10.5%"></div>
+          <div class="t">sun//<em>flora</em></div>
+          <div class="fio-capa" style="bottom:10.5%"></div>
+          <div class="linha" style="bottom:6%"><span>laborateliê</span><span>gira.guru</span></div>
+        </div>
+      </a>
+      <div class="ficha">
+        <div class="nome"><b>SUN//FLORA</b><span class="data" data-en="7 Nov 2026">7 nov. 2026</span></div>
+        <p data-en="A generative solarpunk design system: one editorial base, four elements (Air, Fire, Water, Earth) as states of light, living glass and techno-ancestral type.">Um design system generativo solarpunk: uma base editorial, quatro elementos (Ar, Fogo, Água, Terra) como estados de luz, vidro vivo e tipografia tecnoancestral.</p>
+        <a class="baixar" href="/lab/design-systems/sunflora/sunflora-design-system.md" download="sunflora-design-system.md"><span data-en="download the .md for your AI">baixar o .md para sua IA</span> <span aria-hidden="true">↓</span> <small>67 KB</small></a>
+      </div>
+    </li>
+    <!-- EF | ÉTICA FUTURANTE · roxo (Elaboração de Futuros) -->
+    <li class="ferramenta">
+      <a href="/lab/design-systems/etica-futurante/" aria-label="EF | Ética Futurante">
+        <div class="capa roxo">
+          <svg viewBox="0 0 100 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <!-- pastas empilhadas com abas escalonadas -->
+            <path class="l" d="M7 44 H22 L26 50 H93"/>
+            <path class="l" d="M7 50 V66 H93"/>
+            <path class="l" d="M7 66 H34 L38 60 H52 L56 66"/>
+            <path class="l" d="M7 66 V82 H93"/>
+            <path class="s" d="M7 82 H62 L66 76 H80 L84 82 H93 V98 H7 Z"/>
+          </svg>
+          <div class="linha" style="top:6%"><span>design system</span><span>02</span></div>
+          <div class="fio-capa" style="top:10.5%"></div>
+          <div class="t">ética <em>futurante</em></div>
+          <div class="fio-capa" style="bottom:10.5%"></div>
+          <div class="linha" style="bottom:6%"><span>laborateliê</span><span>gira.guru</span></div>
+        </div>
+      </a>
+      <div class="ficha">
+        <div class="nome"><b>EF | Ética Futurante</b><span class="data" data-en="8 Nov 2026" data-pt="8 nov. 2026">8 nov. 2026</span></div>
+        <p data-en="A hybrid design system for the Ethics of Futuring: MAISON 04 type, grid and Bone palette with the Maia Oazem structure. Blue and red as full blocks, cards that orbit and rise, folders that hold the supporting text." data-pt="Um design system híbrido para a Ética Futurante: tipografia, grade e paleta Bone da base MAISON 04 com a estrutura Maia Oazem. Azul e vermelho como blocos inteiros, cartas que giram e sobem, pastas que guardam o texto de apoio.">Um design system híbrido para a Ética Futurante: tipografia, grade e paleta Bone da base MAISON 04 com a estrutura Maia Oazem. Azul e vermelho como blocos inteiros, cartas que giram e sobem, pastas que guardam o texto de apoio.</p>
+        <a class="baixar" href="/lab/design-systems/etica-futurante/ef-etica-futurante-design-system.md" download="ef-etica-futurante-design-system.md"><span data-en="download the .md for your AI" data-pt="baixar o .md para sua IA">baixar o .md para sua IA</span> <span aria-hidden="true">↓</span> <small>78 KB</small></a>
+      </div>
+    </li>
+  </ul>
+
+  <div class="licenca">
+    <span class="meta" data-en="license">licença</span>
+    <p data-en="Everything here is shared under Creative Commons <a href='https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en' target='_blank' rel='noopener'>CC BY-NC-SA 4.0</a>: use and adapt it, credit gira., do not resell. Tell us how you used it at maiaoazem@gira.guru.">Tudo aqui é compartilhado em Creative Commons <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.pt-br" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>: use e adapte, cite a gira., não revenda. Conte como usou em maiaoazem@gira.guru.</p>
+  </div>
+</main>
+
+<footer>
+  <div class="in">
+    <em data-en="Futures-Informed Creativity">Criatividade Informada por Futuros</em>
+    <span class="meta">Maia Oazem · laborateliê · gira.</span>
+  </div>
+</footer>
+
+<script>
+// Idioma: PT-BR (padrão) ou EN. O inglês fica no atributo data-en de cada texto.
+(function(){
+  var els = document.querySelectorAll('[data-en]');
+  els.forEach(function(el){ el.setAttribute('data-pt', el.innerHTML); });
+  function aplicar(l){
+    l = l === 'en' ? 'en' : 'pt';
+    document.documentElement.lang = l === 'en' ? 'en' : 'pt-BR';
+    els.forEach(function(el){ el.innerHTML = el.getAttribute(l === 'en' ? 'data-en' : 'data-pt'); });
+    document.querySelectorAll('[data-lang]').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.lang === l)); });
+    try { localStorage.setItem('idioma', l); } catch(e){}
+    try {
+      var u = new URL(location.href);
+      if (/^https?:$/.test(u.protocol)) {
+        if (l === 'en') u.searchParams.set('lang','en'); else u.searchParams.delete('lang');
+        history.replaceState(null, '', u.pathname + u.search + u.hash);
+      }
+    } catch(e){}
+  }
+  document.querySelectorAll('[data-lang]').forEach(function(b){ b.addEventListener('click', function(){ aplicar(b.dataset.lang); }); });
+  var inicial = null;
+  try { inicial = new URLSearchParams(location.search).get('lang'); } catch(e){}
+  if (!inicial) { try { inicial = localStorage.getItem('idioma'); } catch(e){} }
+  if (!inicial) inicial = /^pt/i.test(navigator.language || 'pt') ? 'pt' : 'en';
+  aplicar(inicial);
+})();
+</script>
+</body>
+</html>
