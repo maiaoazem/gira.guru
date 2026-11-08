@@ -2,6 +2,8 @@
 
 Site estático publicado pelo Cloudflare (Worker "maia-oazem") a partir deste repositório. Cada push na `main` vai ao ar.
 
+**Repositório:** GitLab `laboratelie-group/site2028` (desde 8 nov. 2026; antes no GitHub `maiaoazem/site2028`, conta suspensa). O Claude envia pelo computador da Maia: a chave de acesso fica no arquivo `poly.xml` em `Documents/2028/GitLab` (nunca copiar a chave para o repositório nem para a conversa).
+
 ## Lab aberto (`/lab`)
 
 Toda ferramenta do lab mora em `lab/<nome>/index.html`.
