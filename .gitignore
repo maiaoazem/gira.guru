@@ -1,0 +1,9 @@
+# Chaves e segredos: nunca entram no repositório
+poly.xml
+*.token
+*.key
+*.pem
+.env
+.env.*
+chave*
+*secret*

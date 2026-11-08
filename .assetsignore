@@ -4,3 +4,7 @@ wrangler.jsonc
 README.md
 CLAUDE.md
 _worker.js
+.gitignore
+poly.xml
+.env
+scripts

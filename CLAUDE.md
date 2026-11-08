@@ -4,6 +4,12 @@ Site estático publicado pelo Cloudflare (Worker "maia-oazem") a partir deste re
 
 **Repositório:** GitLab `laboratelie-group/site2028` (desde 8 nov. 2026; antes no GitHub `maiaoazem/site2028`, conta suspensa). O Claude envia pelo computador da Maia: a chave de acesso fica no arquivo `poly.xml` em `Documents/2028/GitLab` (nunca copiar a chave para o repositório nem para a conversa).
 
+**Segurança da chave (obrigatório em todo envio):**
+- Ler a chave só de dentro do comando (`T=$(grep -oE 'glpat-[A-Za-z0-9._-]+' poly.xml)`), nunca exibir, nunca gravar em `.git/config` nem em arquivo do repositório; mascarar a chave em qualquer saída (`sed "s/$T/***/g"`).
+- Trabalhar num clone fora da pasta `Documents/2028/GitLab`, para o `poly.xml` nunca ficar dentro do repositório.
+- Instalar a trava em todo clone novo: `ln -sf ../../scripts/checar-segredos.sh .git/hooks/pre-commit` — ela bloqueia commits com chaves.
+- `.gitignore` ignora `poly.xml` e outros arquivos de chave; `.assetsignore` impede que sejam publicados no site.
+
 ## Lab aberto (`/lab`)
 
 Toda ferramenta do lab mora em `lab/<nome>/index.html`.
