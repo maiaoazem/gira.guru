@@ -126,7 +126,7 @@ Três famílias livres do Google Fonts. As do laborateliê ficaram com o laborat
 
 | papel | família | estilos | uso |
 |---|---|---|---|
-| Serifa desenhada | Newsreader (300–500, itálico) | `titulo-capa`, `titulo-pagina`, `numero-edicao`, `destaque`, `destaque-italico`, `intertitulo`, `texto-serifa` | títulos, Nº, citações, escrita longa, fólios |
+| Serifa desenhada | Cormorant Garamond (300–500, itálico) | `titulo-capa`, `titulo-pagina`, `numero-edicao`, `destaque`, `destaque-italico`, `intertitulo`, `texto-serifa` | títulos, Nº, citações, escrita longa, fólios |
 | Grotesca | Instrument Sans (400–500) | `titulo-grotesco`, `titulo-secao`, `texto-abertura`, `texto`, `legenda` | fichas, listas, texto de pesquisa, metadados, legendas |
 | Máquina de escrever | Courier Prime | `texto-mono`, `codigo` | laudas, códigos de edição, caminhos de arquivo |
 
@@ -463,9 +463,9 @@ Todo modelo tem versão horizontal para slides, telas, banners e vídeo. Página
 
 ### Famílias tipográficas (Google Fonts, licença livre)
 
-`https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Courier+Prime:ital@0;1&display=swap`
+`https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Courier+Prime:ital@0;1&display=swap`
 
-- `serifa`: "Newsreader", Garamond, Georgia, serif
+- `serifa`: "Cormorant Garamond", Garamond, Georgia, serif
 - `grotesca`: "Instrument Sans", "Helvetica Neue", Arial, sans-serif
 - `mono`: "Courier Prime", "Courier New", monospace
 
@@ -528,7 +528,7 @@ Todos em `viewBox="0 0 100 100"`. Partes em linha: `fill="none"`, `stroke-width=
 
 **Fagulha (logo do laborateliê):** dois triângulos sólidos, sem traço: `<path d="M53 8L91 72H15Z"/>` e `<path d="M43 94L9 36H77Z"/>`.
 
-**Logo Maia Oazem:** desenho à mão vetorizado (arquivos `maia-oazem-tinta.svg`, `maia-oazem-rosa.svg`, `maia-oazem-papel.svg`, proporção 576×656). Nunca redesenhar, aproximar ou recriar com fonte: use sempre o arquivo. Se o arquivo não estiver disponível, escreva "Maia Oazem" em Newsreader 400 e avise.
+**Logo Maia Oazem:** desenho à mão vetorizado (arquivos `maia-oazem-tinta.svg`, `maia-oazem-rosa.svg`, `maia-oazem-papel.svg`, proporção 576×656). Nunca redesenhar, aproximar ou recriar com fonte: use sempre o arquivo. Se o arquivo não estiver disponível, escreva "Maia Oazem" em Cormorant Garamond 400 e avise.
 
 ## 9. Proibições (resumo)
 
@@ -551,7 +551,7 @@ Todos em `viewBox="0 0 100 100"`. Partes em linha: `fill="none"`, `stroke-width=
 - [ ] A moldura mestra está presente nas peças de abertura (fio, linha de assinatura, fio · campo · fio, título em serifa com itálico · fio de pé).
 - [ ] No máximo três tons; o rosa aparece na peça ou na sequência.
 - [ ] Todo texto corrido em `tinta` sobre papel/pastel, ou `papel` sobre `tinta`; contraste ≥ 4.5:1.
-- [ ] Títulos em Newsreader 300/400, com no máximo um itálico; cabeços e metadados em Instrument Sans 15px.
+- [ ] Títulos em Cormorant Garamond 300/400, com no máximo um itálico; cabeços e metadados em Instrument Sans 15px.
 - [ ] Fios de 1px de ponta a ponta da mancha (margem 56; 88 do lado dos furos).
 - [ ] Fólio presente nas páginas internas; fagulha de 22px no pé das páginas de texto, imagem e texto e imagem.
 - [ ] Imagens em monotom, numa tinta.
