@@ -99,7 +99,7 @@ O exemplo acima é ilustrativo (a submissão real contém as 20 respostas). Ao c
 
 ## Notas de design
 
-O DS original é um sistema de zines, impressos e apresentações, não uma biblioteca de componentes web. Sua linguagem foi transposta para interação: papel `#fbf8f4`, rosa `#f6b4d0`, tinta `#141414`; Newsreader, Instrument Sans e fios 1 px; zero arredondamento ou sombras (exceto os marcadores circulares da própria matriz). Ausentes os arquivos SVG oficiais, a assinatura Maia Oazem aparece em texto, como prescreve o DS.
+O DS original é um sistema de zines, impressos e apresentações, não uma biblioteca de componentes web. Sua linguagem foi transposta para interação: papel `#fbf8f4`, rosa `#f6b4d0`, tinta `#141414`; Cormorant Garamond, Instrument Sans e fios 1 px; zero arredondamento ou sombras (exceto os marcadores circulares da própria matriz). Ausentes os arquivos SVG oficiais, a assinatura Maia Oazem aparece em texto, como prescreve o DS.
 
 ## Arquivos
 
