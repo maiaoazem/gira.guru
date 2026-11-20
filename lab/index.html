@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#f9ea8c">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Instrument+Sans:wght@400;500&family=Courier+Prime&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Instrument+Sans:wght@400;500;600&family=Courier+Prime&display=swap" rel="stylesheet">
 <!--
   ============================================================
   LAB ABERTO · como atualizar
@@ -27,7 +27,8 @@
     Subtítulo
     Descrição
     Reconhecimentos  "-" ou vazio = nada aparece
-    Link             "-" ou vazio = sem link
+    Link             "-" ou vazio = sem link (abre sempre em nova aba)
+    Imagem           nome do arquivo em /lab/images/ (ex.: clube.gif)
   Opcionais para a versão em inglês (se vazias, usa o PT):
     Título EN, Subtítulo EN, Descrição EN, Categoria EN,
     Reconhecimentos EN
@@ -45,6 +46,7 @@
   --margem:64px;
   /* papel da página: amarelo (padrão) ou branco */
   --fundo:var(--amarelo); --numero:var(--tinta);
+  --cinza:color-mix(in srgb, var(--tinta) 58%, var(--fundo));
 }
 html[data-papel="branco"]{ --fundo:var(--papel); --numero:var(--amarelo-tinta); }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -84,17 +86,25 @@ h1{font-family:var(--serifa);font-weight:300;font-size:clamp(88px,15vw,232px);li
 
 /* seções */
 section{margin-top:56px}
-.secao{display:grid;grid-template-columns:96px 1fr auto;align-items:end;gap:28px;padding:10px 0 12px;border-top:2px solid var(--tinta);border-bottom:1px solid var(--tinta)}
+.secao{display:grid;grid-template-columns:96px 1fr auto;align-items:end;gap:28px;padding:10px 0 12px;border-top:2px solid var(--tinta)}
 .secao .n{font-family:var(--serifa);font-weight:300;font-size:44px;line-height:.9;color:var(--numero)}
 .secao h2{font-family:var(--serifa);font-weight:300;font-size:clamp(40px,5vw,64px);line-height:.95;letter-spacing:-.01em}
 .secao .conta{padding-bottom:4px}
 
 /* linhas do arquivo */
-.item{display:grid;grid-template-columns:96px minmax(220px,3fr) minmax(260px,4fr) 92px 40px;gap:28px;padding:18px 0 20px;border-bottom:1px solid var(--tinta)}
-.item .cod{font-family:var(--mono);padding-top:6px}
+/* cada item é uma pasta: a borda de cima tem uma aba com o código */
+.item{position:relative;display:grid;grid-template-columns:minmax(240px,3fr) minmax(260px,4fr) 92px 40px;gap:28px;margin-top:40px;padding:20px 0 24px;border-top:1px solid var(--tinta)}
+.item:last-child{border-bottom:1px solid var(--tinta)}
+.aba{position:absolute;top:-28px;left:var(--aba,0px);height:28px;padding:0 26px;display:flex;align-items:center;font-family:var(--mono);font-size:13px;z-index:1}
+.aba::before{content:"";position:absolute;inset:0;border:1px solid var(--tinta);border-bottom:0;background:var(--fundo);transform:perspective(26px) rotateX(9deg);transform-origin:bottom;z-index:-1}
+.aba::after{content:"";position:absolute;left:1px;right:1px;bottom:-1px;height:1px;background:var(--fundo)}
 .item h3{font-family:var(--serifa);font-weight:400;font-size:30px;line-height:1.02;letter-spacing:-.01em}
-.item .sub{font-family:var(--serifa);font-style:italic;font-size:20px;line-height:1.15;margin-top:6px}
+.item h3.sem-link{color:var(--cinza)}
+.item .sub{font-family:var(--serifa);font-style:italic;font-size:20px;line-height:1.15;margin-top:6px;color:var(--cinza)}
+.item .img{display:block;margin-top:18px;max-width:320px;width:100%;height:auto}
+.item .img.monotom{filter:grayscale(1) contrast(1.05);mix-blend-mode:multiply}
 .item .desc{max-width:62ch}
+.item .desc strong{font-weight:600}
 .item .rec{margin-top:10px;font-weight:500}
 .item .rec .versal{margin-right:6px;font-size:11px}
 .item .fase{padding-top:4px}
@@ -110,7 +120,7 @@ footer{margin-top:96px;border-top:1px solid var(--tinta);padding-top:18px;displa
 .assinatura{display:flex;align-items:center;gap:12px;font-family:var(--serifa);font-size:24px}
 .assinatura img{width:22px;height:22px}
 footer .dir{text-align:right}
-footer .fonte{grid-column:1/-1;border-top:1px solid var(--tinta);padding-top:12px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer .fonte{grid-column:1/-1;text-align:right}
 
 @media (max-width:900px){
   :root{--margem:20px}
@@ -122,7 +132,7 @@ footer .fonte{grid-column:1/-1;border-top:1px solid var(--tinta);padding-top:12p
   .secao h2{font-size:34px}
   .secao .conta{white-space:nowrap}
   .item{grid-template-columns:1fr auto;gap:8px 16px}
-  .item .cod{grid-column:1;padding:0}
+  .aba{left:0 !important}
   .item .fase{grid-column:2;grid-row:1;padding:0}
   .item .titulo,.item .corpo{grid-column:1/-1}
   .item .ir{grid-column:1/-1;text-align:left;font-size:24px}
@@ -166,7 +176,6 @@ footer .fonte{grid-column:1/-1;border-top:1px solid var(--tinta);padding-top:12p
   </div>
   <div class="dir">CC BY-NC-SA 4.0 · <span data-t="cif"></span></div>
   <div class="fonte mono">
-    <span data-t="fonte"></span>
     <span id="atualizado"></span>
   </div>
 </footer>
@@ -174,19 +183,19 @@ footer .fonte{grid-column:1/-1;border-top:1px solid var(--tinta);padding-top:12p
 <script>
 /* ---------- configuração ---------- */
 const CSV_URL = "itens.csv";   // pode ser também o link "publicar na web → CSV" de uma Planilha Google
+const PASTA_IMAGENS = "images/"; // nome na coluna Imagem → /lab/images/nome
+const MONOTOM = true;            // imagens em monotom (regra do DS); false = cores originais
 
 const T = {
   pt:{intro:"Arquivo do laborateliê: estudos com humanos, ferramentas e projetos em desenvolvimento, do rascunho ao lançamento.",
       itens:"itens", cats:"categorias", fases:"fases", fonte_l:"fonte",
       todos:"todos", filtrar:"filtrar", fase:"fase", rec:"reconhecimentos", abrir:"abrir",
       cif:"Criatividade Informada por Futuros",
-      fonte:'arquivo-fonte: <a href="itens.csv" download>/lab/itens.csv</a>',
       atual:"atualizado em", erro:"não foi possível ler itens.csv."},
   en:{intro:"The laborateliê archive: human studies, tools and projects in development, from draft to launch.",
       itens:"items", cats:"categories", fases:"phases", fonte_l:"source",
       todos:"all", filtrar:"filter", fase:"phase", rec:"recognition", abrir:"open",
       cif:"Futures-Informed Creativity",
-      fonte:'source file: <a href="itens.csv" download>/lab/itens.csv</a>',
       atual:"updated", erro:"could not read itens.csv."}
 };
 const ROMANOS=["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"];
@@ -227,7 +236,7 @@ function paraItens(linhas){
   return linhas.slice(1).map(l=>{
     const g = nome => { const i=idx(nome); return i<0 ? "" : (l[i]||"").trim(); };
     const par = nome => ({pt:g(nome), en:g(nome+" EN")});
-    return { cod:g("#"), fase:g("Fase"), link:g("Link"),
+    return { cod:g("#"), fase:g("Fase"), link:g("Link"), img:g("Imagem"),
       cat:par("Categoria"), titulo:par("Título"), sub:par("Subtítulo"),
       desc:par("Descrição"), rec:par("Reconhecimentos") };
   }).filter(it=>it.titulo.pt||it.cod);
@@ -253,6 +262,7 @@ function desenhar(){
   document.querySelectorAll("[data-papel]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.papel===papel));
   if(!itens.length) return;
 
+  nItem = 0;
   const cats = categorias();
   const nomeCat = pt => { const it=itens.find(i=>i.cat.pt===pt); return txt(it.cat); };
   const fases = [...new Set(itens.map(i=>i.fase).filter(f=>!vazio(f)))]
@@ -282,18 +292,30 @@ function desenhar(){
     ? `${t("atual")} ${modificado.toLocaleDateString("pt-BR").replace(/\//g,".")}` : "";
 }
 
+// negrito na primeira frase da descrição (até o primeiro ":" "." "?" ou "!")
+function descricao(d){
+  const m = d.match(/^([\s\S]*?[.:?!])(\s+[\s\S]*)?$/);
+  if(!m) return esc(d);
+  return `<strong>${esc(m[1])}</strong>${esc(m[2]||"")}`;
+}
+const ABAS = ["0px","140px","280px","420px"];
+let nItem = 0;
 function linhaItem(it){
   const temLink = !vazio(it.link);
-  const titulo = temLink ? `<a href="${esc(it.link)}">${txt(it.titulo)}</a>` : txt(it.titulo);
+  const fora = 'target="_blank" rel="noopener"';
+  const titulo = temLink ? `<a href="${esc(it.link)}" ${fora}>${txt(it.titulo)}</a>` : txt(it.titulo);
+  const src = vazio(it.img) ? "" : (/^(https?:)?\/\//.test(it.img) || it.img.startsWith("/") ? it.img : PASTA_IMAGENS + it.img);
+  const imagem = src ? `<img class="img${MONOTOM?" monotom":""}" src="${esc(src)}" alt="${txt(it.titulo)}" loading="lazy" onerror="this.remove()">` : "";
+  const aba = ABAS[nItem++ % ABAS.length];
   return `<article class="item">
-    <div class="cod">${esc(it.cod)}</div>
-    <div class="titulo"><h3>${titulo}</h3>${vazio(it.sub.pt)?"":`<p class="sub">${txt(it.sub)}</p>`}</div>
+    <div class="aba" style="--aba:${aba}">${esc(it.cod)}</div>
+    <div class="titulo"><h3${temLink?"":' class="sem-link"'}>${titulo}</h3>${vazio(it.sub.pt)?"":`<p class="sub">${txt(it.sub)}</p>`}${imagem}</div>
     <div class="corpo">
-      ${vazio(it.desc.pt)?"":`<p class="desc">${txt(it.desc)}</p>`}
+      ${vazio(it.desc.pt)?"":`<p class="desc">${descricao(lang==="en"&&!vazio(it.desc.en)?it.desc.en:it.desc.pt)}</p>`}
       ${vazio(it.rec.pt)?"":`<p class="rec"><span class="versal">${t("rec")}</span>${txt(it.rec)}</p>`}
     </div>
     <div class="fase">${vazio(it.fase)?"":`<span class="tag">${t("fase")} ${esc(it.fase)}</span>`}</div>
-    ${temLink?`<a class="ir" href="${esc(it.link)}" aria-label="${t("abrir")}">↗</a>`:"<span></span>"}
+    ${temLink?`<a class="ir" href="${esc(it.link)}" ${fora} aria-label="${t("abrir")}">↗</a>`:"<span></span>"}
   </article>`;
 }
 
