@@ -7,7 +7,7 @@
 <meta name="description" content="lab aberto · arquivo do laborateliê de Maia Oazem: estudos com humanos, ferramentas e projetos em desenvolvimento.">
 <meta property="og:title" content="lab aberto · laborateliê">
 <meta property="og:description" content="Arquivo do laborateliê de Maia Oazem.">
-<meta name="theme-color" content="#f9ea8c">
+<meta name="theme-color" content="#fbf8f4">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Instrument+Sans:wght@400;500;600&family=Courier+Prime&display=swap" rel="stylesheet">
@@ -44,11 +44,11 @@
   --grotesca:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
   --mono:"Courier Prime","Courier New",monospace;
   --margem:64px;
-  /* papel da página: amarelo (padrão) ou branco */
-  --fundo:var(--amarelo); --numero:var(--tinta);
+  /* papel da página: branco (padrão) ou amarelo */
+  --fundo:var(--papel); --numero:var(--amarelo-tinta);
   --cinza:color-mix(in srgb, var(--tinta) 58%, var(--fundo));
 }
-html[data-papel="branco"]{ --fundo:var(--papel); --numero:var(--amarelo-tinta); }
+html[data-papel="amarelo"]{ --fundo:var(--amarelo); --numero:var(--tinta); }
 *{box-sizing:border-box;margin:0;padding:0}
 html{background:var(--fundo);color:var(--tinta);-webkit-text-size-adjust:100%}
 body{font-family:var(--grotesca);font-size:15px;line-height:1.42;max-width:1440px;margin:0 auto;padding:0 var(--margem) 64px}
@@ -152,7 +152,7 @@ footer .fonte{grid-column:1/-1;text-align:right}
   </nav>
   <div class="chaves">
     <div class="chave" role="group" aria-label="papel">
-      <button data-papel="amarelo">amarelo</button><span>·</span><button data-papel="branco">branco</button>
+      <button data-papel="branco">branco</button><span>·</span><button data-papel="amarelo">amarelo</button>
     </div>
     <div class="chave" role="group" aria-label="idioma">
       <button data-lang="pt">PT-BR</button><span>·</span><button data-lang="en">EN</button>
@@ -204,7 +204,7 @@ const ROMANOS=["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"];
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const q=new URLSearchParams(location.search);
 let lang = q.get("lang") || store.get("lab-lang") || "pt";
-let papel = q.get("papel") || store.get("lab-papel") || "amarelo";
+let papel = q.get("papel") || store.get("lab-papel") || "branco";
 let filtro = "todos";
 let itens = [], modificado = null;
 
