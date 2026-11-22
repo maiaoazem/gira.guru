@@ -548,6 +548,12 @@ S-004,Hope is Lost,Your opponent's Hope mana cards cannot advance during the Evo
 S-005,Fear is Dead,Your opponent's Fear mana cards cannot advance during the Evolution phase.,0,0,0,,,,,
 S-006,Ghost in the Machine,"It can be placed as an item card on an opponent's Mecha character. While it is on the field, the character equipped with it cannot attack.",1,0,0,,,,,`;
 
+/* ── Google Sheets ──
+   Cole aqui o link CSV de cada aba (Arquivo › Compartilhar › Publicar na Web › aba › CSV).
+   Vazio = usa os CSVs embutidos abaixo. Se a planilha falhar, também cai nos embutidos. */
+const SHEET_CHARS_URL  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8mGK5BNR_z-5psFVoS55RaZhfKkcNgajCUsci9RhfJVW4xhC8BmXkQO7WIF9tMW6DceGBORdURuZb/pub?gid=0&single=true&output=csv';
+const SHEET_SKILLS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8mGK5BNR_z-5psFVoS55RaZhfKkcNgajCUsci9RhfJVW4xhC8BmXkQO7WIF9tMW6DceGBORdURuZb/pub?gid=689030425&single=true&output=csv';
+
 const IMG_BASE = 'https://gira.guru/lab/hope-game/_assets/images/chars/';
 const IMG_LOCAL = 'images/chars/';
 function setImg(img,file,fail){const src=[IMG_LOCAL+file,IMG_BASE+file,IMG_BASE_HTTP+file];let i=0;img.onerror=()=>{i++;if(i<src.length)img.src=src[i];else fail()};img.src=src[0]}
@@ -640,6 +646,16 @@ function render(){
   });
 }
 render();
+async function loadSheets(){
+  const get=u=>fetch(u+(u.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw r.status;return r.text()});
+  try{
+    const [c,k]=await Promise.all([SHEET_CHARS_URL?get(SHEET_CHARS_URL):null,SHEET_SKILLS_URL?get(SHEET_SKILLS_URL):null]);
+    if(c) chars=toObjects(parseCSV(c));
+    if(k) skills=toObjects(parseCSV(k));
+    if(c||k) render();
+  }catch(e){console.warn('Planilha indisponível, usando CSV embutido',e)}
+}
+loadSheets();
 document.getElementById('force').onchange=e=>{FORCE=e.target.value;render()};
 document.getElementById('ds').onchange=e=>{DS=e.target.value;render()};
 document.getElementById('theme').onchange=e=>{document.body.dataset.theme=e.target.value};
