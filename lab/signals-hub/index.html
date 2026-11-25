@@ -4,8 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Outra Coisa é Possível · Cartas de Sinais</title>
+<link rel="preload" href="fonts/InstrumentSans-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/CormorantGaramond-Italic-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/CourierPrime-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-@font-face{font-family:"Instrument Sans";src:url("fonts/InstrumentSans-Variable.woff2") format("woff2");font-weight:400 700;font-stretch:75% 100%;font-style:normal;font-display:swap}
+@font-face{font-family:"Instrument Sans";src:url("fonts/InstrumentSans-Variable.woff2") format("woff2");font-weight:400 700;font-stretch:75% 100%;font-style:normal;font-display:block}
 @font-face{font-family:"Cormorant Garamond";src:url("fonts/CormorantGaramond-Italic-Variable.woff2") format("woff2");font-weight:300 700;font-style:italic;font-display:swap}
 @font-face{font-family:"Courier Prime";src:url("fonts/CourierPrime-Regular.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
 
@@ -68,7 +71,7 @@ body{font-family:var(--grotesca);font-size:17px;line-height:1.45;-webkit-font-sm
 .achado{margin-top:10px;font-family:var(--mono);font-size:12px;line-height:1.4;color:var(--texto-suave)}
 .achado b{font-weight:400;background:var(--ouro-vivo);color:var(--tinta);padding:0 3px}
 /* carrossel horizontal: arrastar, rolar ou setas; sempre na horizontal */
-.grade{--larg:380px;display:flex;align-items:flex-start;gap:var(--passo-3);
+.grade{--larg:380px;display:flex;align-items:stretch;gap:var(--passo-3);
   overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;
   margin-inline:calc(var(--passo-3) * -1);padding:0 var(--passo-3) var(--passo-2);scroll-padding-inline:var(--passo-3);
   scrollbar-width:none;cursor:grab}
@@ -109,7 +112,9 @@ body{font-family:var(--grotesca);font-size:17px;line-height:1.45;-webkit-font-sm
 .aba-dica b{display:block;font-family:var(--mono);font-weight:400;font-size:12px;color:var(--papel);margin-bottom:2px}
 .abas-wrap{position:relative}
 
-.frente{background:var(--c);display:flex;flex-direction:column}
+.carta{display:flex;flex-direction:column}
+.frente{background:var(--c);display:flex;flex-direction:column;flex:1}
+.frente .forcas{margin-top:auto}
 
 .zona{cursor:pointer;position:relative}
 .zona:focus-visible{outline:1px solid var(--sobre-faixa);outline-offset:-4px}
@@ -121,11 +126,12 @@ body{font-family:var(--grotesca);font-size:17px;line-height:1.45;-webkit-font-sm
 .carta .sel{font-size:11px;letter-spacing:.12em;font-weight:500;text-transform:uppercase;cursor:default}
 .carta .sel > *{cursor:inherit;padding:5px 10px}
 .cabeco{position:relative;z-index:2;overflow:visible}
-.titulo{position:relative;font-size:40px;line-height:.98;font-weight:500;letter-spacing:-.035em;font-stretch:86%;
+.titulo{position:relative;min-height:calc(2 * .98 * 40px);font-size:40px;line-height:.98;font-weight:500;letter-spacing:-.035em;font-stretch:86%;
   transition:font-size var(--tempo-fecha) var(--curva-portal),font-stretch var(--tempo-fecha) var(--curva-portal),
     color var(--tempo-fecha) var(--curva-portal),line-height var(--tempo-fecha) var(--curva-portal),
     transform var(--tempo-fecha) var(--curva-portal)}
 /* no hover: o título cresce, quebra linha para dentro da imagem e fica branco */
+.titulo.uma{display:flex;align-items:center}
 .carta:hover .titulo,.carta:focus-within .titulo{font-size:78px;line-height:.9;font-stretch:100%;color:var(--papel);transform:translateY(var(--desce,0px));
   transition-duration:var(--tempo-abre)}
 
@@ -159,7 +165,7 @@ body{font-family:var(--grotesca);font-size:17px;line-height:1.45;-webkit-font-sm
 
 /* descrição */
 .desc{padding:16px 18px 20px;font-size:15px;line-height:1.45}
-.desc p{display:-webkit-box;-webkit-line-clamp:7;-webkit-box-orient:vertical;overflow:hidden}
+.desc p{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .desc strong{font-weight:600}
 
 /* forças */
@@ -203,7 +209,18 @@ body{font-family:var(--grotesca);font-size:17px;line-height:1.45;-webkit-font-sm
 .esq-cab .dados{margin-bottom:var(--passo-3)!important}
 .esq-titulo{font-size:clamp(34px,3.3vw,56px);line-height:.92;font-weight:500;letter-spacing:-.04em;text-wrap:balance}
 .esq-img{aspect-ratio:auto;min-height:260px;height:100%;background:var(--cv);overflow:hidden}
+.esq-img{position:relative}
 .esq-img img{width:100%;height:100%;object-fit:cover;display:block}
+.galeria{position:absolute;inset:0}
+.galeria img,.galeria .sem{position:absolute;inset:0;opacity:0;transition:opacity var(--tempo-abre) var(--curva-portal)}
+.galeria img.on,.galeria .sem.on{opacity:1}
+.galeria[data-n="1"] img,.galeria[data-n="1"] .sem{opacity:1}
+.galeria-pontos{position:absolute;left:var(--passo-2);bottom:var(--passo-2);display:flex;gap:6px;z-index:2}
+.galeria-pontos button{width:14px;height:14px;padding:0;border:1px solid var(--papel);background:transparent;cursor:pointer;
+  box-shadow:0 0 0 1px var(--tinta);transition:background 250ms var(--curva-pouso)}
+.galeria-pontos button.on{background:var(--papel)}
+.galeria-pontos button:hover:not(.on){background:color-mix(in oklch,var(--papel),transparent 50%)}
+.galeria-pontos button:focus-visible{outline:2px solid var(--ouro-vivo);outline-offset:2px}
 .esq-img .sem{display:flex;height:100%;align-items:flex-end;padding:14px var(--passo-3);font-family:var(--mono);font-size:14px}
 .esq-sub{font-family:var(--serifa);font-style:italic;font-weight:400;font-size:22px;line-height:1.15;
   padding:0;margin-top:auto;padding-top:var(--passo-3);max-width:34ch;text-wrap:balance}
@@ -368,8 +385,9 @@ body{font-family:var(--grotesca);font-size:17px;line-height:1.45;-webkit-font-sm
 </section>
 
 <!-- Cópia local dos dados: só é usada se a planilha do Google não responder. -->
-<script type="text/csv" id="csv-a">#,A-A,Title,Subtitle,Description,Evidences,sources,Image,Image Source
-A-001,artifact,Drones com Fio,"Drones ligados ao operador por um cabo de fibra óptica, imunes ao bloqueio de sinal, mudam a forma da guerra","Um cabo físico de 30 a 50 km substitui o rádio, e o bloqueio de sinal perde efeito. A guerra eletrônica se espalhou pela frente ucraniana e deixou os drones sem fio vulneráveis. A Rússia lançou a sua versão em 2024; depois da repercussão nas redes sociais, um membro de uma rede de apoio à Ucrânia fez engenharia reversa e a DTU (Defense Tech for Ukrayne) viabilizou o primeiro uso ucraniano. São feitos com peças comerciais de uso duplo e impressão 3D. Não há defesa confiável e difundida ""além de se esconder"".",E-001; E-002; E-003; E-004; E-005; E-006; E-007; E-008; ,https://en.majalla.com/node/331233/science-technology/how-fibre-optic-drones-are-reshaping-warfare; https://www.bbc.com/news/articles/c0r2ydlvk41o; https://www.arabnews.jp/en/middle-east/how-fiber-optic-drones-are-changing-the-face-of-modern-warfare-173992; https://en.wikipedia.org/wiki/Fiber_optic_drone; ,wired-drone.webp,https://en.wikipedia.org/wiki/Fiber_optic_drone#/media/File:UA_fiber-optic_FPV_drone_01.webp
+<script type="text/csv" id="csv-a">#,A-A,Title,Subtitle,Description,Evidences,sources,Image,Image Source,other-images,other-images-source
+A-001,artifact,Drones com Fio,"Drones ligados ao operador por um cabo de fibra óptica, imunes ao bloqueio de sinal, mudam a forma da guerra","Um cabo físico de 30 a 50 km substitui o rádio, e o bloqueio de sinal perde efeito. A guerra eletrônica se espalhou pela frente ucraniana e deixou os drones sem fio vulneráveis. A Rússia lançou a sua versão em 2024; depois da repercussão nas redes sociais, um membro de uma rede de apoio à Ucrânia fez engenharia reversa e a DTU (Defense Tech for Ukrayne) viabilizou o primeiro uso ucraniano. São feitos com peças comerciais de uso duplo e impressão 3D. Não há defesa confiável e difundida ""além de se esconder"".",E-001; E-002; E-003; E-004; E-005; E-006; E-007; E-008; ,https://en.majalla.com/node/331233/science-technology/how-fibre-optic-drones-are-reshaping-warfare; https://www.bbc.com/news/articles/c0r2ydlvk41o; https://www.arabnews.jp/en/middle-east/how-fiber-optic-drones-are-changing-the-face-of-modern-warfare-173992; https://en.wikipedia.org/wiki/Fiber_optic_drone; ,wired-drone.webp,https://en.wikipedia.org/wiki/Fiber_optic_drone#/media/File:UA_fiber-optic_FPV_drone_01.webp,draw-me-a-face-2.jpg; draw-me-a-face-3.jpg; draw-me-a-face-4.jpg; draw-me-a-face-5.jpg,https://www.designboom.com/art/draw-me-a-face-childrens-imagination-playful-makeup/
+A-002,act,Maquiagem por Crianças,Crianças desenham sobre moldes de rosto e uma equipe de beleza traduz seus traços em maquiagem de moda,"O projeto ""Draw me a Face"" convidou crianças a desenhar nos moldes de rosto usados por maquiadores para planejar composições. Com os desenhos de origem publicados junto aos retratos reconhecemos os traços infantis na maquiagem, e uma leveza do possível nessa realidade. O projeto amplia a imaginação coletiva sobre o que pode aparecer num rosto, o que é ou não maquiagem e beleza, e como a arte facial pode ser feita e pensada. O gesto de ateliê está em deixar que algo surgido da brincadeira passe a orientar a técnica, inclusive quando o traço contraria hábitos do ofício. Tiziana Raimondo recriou os desenhos em rostos de modelos. Pierre-Emmanuel Testard fotografou a série, com direção criativa de Aurélie Joly e do Buro Nōto.",E-009; E-010; E-011; E-012; E-013; ,https://www.designboom.com/art/draw-me-a-face-childrens-imagination-playful-makeup/; https://revistatop.com.mx/antes-de-limitar-la-imaginacion-draw-me-a-face/; https://visie.io/project/various-editorials-draw-me-a-face-part-1-2026;,draw-me-a-face.jpeg,https://visie.io/project/various-editorials-draw-me-a-face-part-1-2026,wired-drone-2.webp; wired-drone-3.jpg; drone_pilot.jpg; ,https://www.bbc.com/news/articles/ckgn47e5qyno; https://www.arabnews.com/middle-east/how-fiber-optic-drones-are-changing-the-face-of-modern-warfare-2650668;
 </script>
 <script type="text/csv" id="csv-s">#,verge-type,title (AI),signal,acts / artifacts,evidences,correlations
 S-001,CONNECT,Retorno às Redes Cabeadas,"Do sem fio como infraestrutura dominante para o fio físico como garantia de não-conectividade externa. Transposição: infraestruturas civis críticas também podem voltar ao cabo, como forma de resiliência e soberania. Menor acesso sem fio permitido em espaços, e maior controle de acessos no nível dos despositivos.",A-001;,E-001; E-007;,
@@ -535,6 +553,8 @@ function montar(A, S, E) {
       titulo: a.Title, subtitulo: a.Subtitle, desc: a.Description,
       evid: _ev, dom, matiz: dom ? dom.matiz : "rosa",
       fontes, sinais, imagem: a.Image, imagemFonte: a["Image Source"],
+      outras: lista((a["other-images"] || "").replace(/,/g, ";")),
+      outrasFontes: (a["other-images-source"] || "").split(/;\s*|\s*\n\s*/).map(x => x.trim()).filter(Boolean),
     };
   });
 }
@@ -545,6 +565,18 @@ const CIRC = '<svg class="circ" viewBox="0 0 100 40" preserveAspectRatio="none" 
 function primeiroBloco(t) {
   const m = t.match(/^[\s\S]*?[.!?:](?=\s|$)/);
   return m ? [m[0], t.slice(m[0].length)] : [t, ""];
+}
+
+// Título sempre em duas linhas: corta no espaço que deixa as linhas mais parecidas em tamanho.
+// Uma palavra só fica numa linha, no meio do espaço das duas.
+function duasLinhas(t) {
+  const w = (t || "").trim().split(/\s+/); if (w.length < 2) return esc(t || "");
+  let melhor = 1, dif = Infinity;
+  for (let k = 1; k < w.length; k++) {
+    const a = w.slice(0, k).join(" ").length, b = w.slice(k).join(" ").length, d = Math.abs(a - b);
+    if (d < dif) { dif = d; melhor = k; }
+  }
+  return `${esc(w.slice(0, melhor).join(" "))}<br>${esc(w.slice(melhor).join(" "))}`;
 }
 
 function htmlCarta(c, onde = []) {
@@ -581,7 +613,7 @@ function htmlCarta(c, onde = []) {
             <span class="${ehAto ? "" : "on"}">Artefato${CIRC}</span>
           </div>
         </div>
-        <h2 class="titulo">${esc(c.titulo)}</h2>
+        <h2 class="titulo${(c.titulo || "").trim().includes(" ") ? "" : " uma"}">${duasLinhas(c.titulo)}</h2>
       </header>
       <figure class="zona imagem" data-area="imagem" tabindex="0">${img}</figure>
       <div class="zona mq" data-area="evidencias" tabindex="0" aria-label="${c.evid.length} evidências. Arraste para os lados.">
@@ -604,7 +636,10 @@ function htmlCarta(c, onde = []) {
 // Imagem: tenta o servidor da gira; se bloqueado (ex.: prévia), usa a cópia local; senão, mostra o nome do arquivo.
 function imgFalhou(im) {
   if (im.dataset.local && !im.dataset.tentou) { im.dataset.tentou = 1; im.src = im.dataset.local; return; }
-  const s = document.createElement("span"); s.className = "sem"; s.textContent = im.dataset.local.replace(/^img\//, ""); im.replaceWith(s);
+  const s = document.createElement("span"); s.className = "sem" + (im.classList.contains("on") ? " on" : "");
+  s.textContent = im.dataset.local.replace(/^img\//, "");
+  const g = im.closest(".galeria"); if (g) s.dataset.k = [...g.children].indexOf(im);
+  im.replaceWith(s);
 }
 
 /* ================= MARQUEE ================= */
@@ -703,6 +738,16 @@ grade.addEventListener("wheel", e => {
   addEventListener("pointerup", solta); addEventListener("pointercancel", solta);
 }
 
+// Aquece a fonte no estado do hover (78px, largura cheia) para a troca não engasgar na primeira vez.
+function aquecerFonte() {
+  let w = document.getElementById("aquece");
+  if (!w) { w = document.createElement("div"); w.id = "aquece"; w.setAttribute("aria-hidden", "true");
+    w.style.cssText = "position:absolute;left:-9999px;top:0;visibility:hidden;pointer-events:none;font:500 78px/.9 var(--grotesca);font-stretch:100%;letter-spacing:-.035em;white-space:nowrap";
+    document.body.appendChild(w); }
+  w.textContent = CARTAS.map(c => c.titulo).join(" ") + " AÁÂÃÉÊÍÓÔÕÚÇ aáâãéêíóôõúç 0123456789";
+  if (document.fonts) document.fonts.load('500 78px "Instrument Sans"', w.textContent).catch(() => {});
+}
+
 /* ================= NAVEGADOR ================= */
 let CARTAS = [], FILTRO = "todos", BUSCA = [];
 const ehAtoC = c => ["act","ato"].includes(c.tipo);
@@ -730,6 +775,7 @@ function desenhar() {
   document.querySelectorAll("#filtro button").forEach(b => b.querySelector(".rot").textContent = rot[b.dataset.f]);
   g.querySelectorAll(".mq").forEach(ligarMarquee);
   travarCabecos();
+  aquecerFonte();
   g.scrollLeft = 0; setas();
 }
 
@@ -818,7 +864,15 @@ function renderEsq(c) {
   el.style.setProperty("--c", `var(--${c.matiz})`); el.style.setProperty("--cv", `var(--${c.matiz}-vivo)`);
   const ehAto = ["act","ato"].includes(c.tipo);
   const [lead, rest] = primeiroBloco(c.desc || "");
-  const img = c.imagem ? `<img src="${esc(BASE_IMAGENS + c.imagem)}" alt="${esc(c.subtitulo || c.titulo)}" data-local="img/${esc(c.imagem)}" onerror="imgFalhou(this)">` : `<span class="sem">sem imagem</span>`;
+  // imagem principal + other-images, trocando de tempos em tempos
+  const imgs = [c.imagem, ...c.outras].filter(Boolean);
+  const img = imgs.length ? `<div class="galeria" data-n="${imgs.length}">
+      ${imgs.map((f, k) => `<img class="${k ? "" : "on"}" src="${esc(BASE_IMAGENS + f)}" alt="${esc(k ? `${c.titulo}, imagem ${k + 1}` : (c.subtitulo || c.titulo))}"
+        ${k ? 'loading="lazy"' : ""} data-local="img/${esc(f)}" onerror="imgFalhou(this)">`).join("")}
+      ${imgs.length > 1 ? `<div class="galeria-pontos" role="group" aria-label="Imagens">${imgs.map((_, k) =>
+        `<button type="button" class="${k ? "" : "on"}" data-img="${k}" aria-label="Imagem ${k + 1} de ${imgs.length}" aria-pressed="${!k}"></button>`).join("")}</div>` : ""}
+    </div>` : `<span class="sem">sem imagem</span>`;
+  const fontesImg = [...new Set([c.imagemFonte, ...c.outrasFontes].filter(Boolean))];
   const link = u => `<li><a href="${esc(u)}" target="_blank" rel="noopener noreferrer"><span>${esc(dominio(u))}</span>${SETA}</a></li>`;
   el.innerHTML = `
     <div class="esq-topo">
@@ -856,12 +910,32 @@ function renderEsq(c) {
       <div class="bloco-cab"><h2 class="versal">Fontes</h2><span class="codigo">${n2(c.fontes.length)}</span></div>
       <ol class="fontes-lista">${c.fontes.map(link).join("")}</ol>
     </section>
-    ${c.imagemFonte ? `<section class="bloco">
-      <div class="bloco-cab"><h2 class="versal">Fonte da imagem</h2></div>
-      <ol class="fontes-lista" style="counter-reset:f -1">${link(c.imagemFonte)}</ol>
+    ${fontesImg.length ? `<section class="bloco">
+      <div class="bloco-cab"><h2 class="versal">${fontesImg.length === 1 ? "Fonte da imagem" : "Fontes das imagens"}</h2><span class="codigo">${n2(fontesImg.length)}</span></div>
+      <ol class="fontes-lista">${fontesImg.map(link).join("")}</ol>
     </section>` : ""}
 `;
   desenhaMapa();
+  ligarGaleria();
+}
+
+let tGaleria = null;
+function ligarGaleria() {
+  clearInterval(tGaleria);
+  const g = document.querySelector("#det-esq .galeria"); if (!g || g.dataset.n < 2) return;
+  const imgs = () => [...g.querySelectorAll("img")], pts = [...g.querySelectorAll(".galeria-pontos button")];
+  let i = 0, parado = false;
+  const vai = k => {
+    const lista = imgs(); i = (k + pts.length) % pts.length;
+    lista.forEach((im, n) => im.classList.toggle("on", n === i));
+    g.querySelectorAll(".sem").forEach((sp, n) => sp.classList.toggle("on", sp.dataset.k == i));
+    pts.forEach((b, n) => { b.classList.toggle("on", n === i); b.setAttribute("aria-pressed", n === i); });
+  };
+  pts.forEach((b, n) => b.addEventListener("click", () => { vai(n); reinicia(); }));
+  g.addEventListener("pointerenter", () => parado = true);
+  g.addEventListener("pointerleave", () => parado = false);
+  const reinicia = () => { clearInterval(tGaleria); if (!reduz) tGaleria = setInterval(() => { if (!parado && !document.hidden) vai(i + 1); }, 4500); };
+  reinicia();
 }
 
 const roMapa = new ResizeObserver(() => desenhaMapa());
