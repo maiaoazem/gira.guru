@@ -1,14 +1,18 @@
 # Site Maia Oazem (gira.guru)
 
-Site estático publicado pelo Cloudflare (Worker "maia-oazem") a partir deste repositório. Cada push na `main` vai ao ar.
+Site estático publicado pelo Cloudflare (Worker "maia-oazem") a partir deste repositório. Cada push na `main` vai ao ar em 1 a 2 minutos.
 
-**Repositório:** GitLab `laboratelie-group/site2028` (desde 8 nov. 2026; antes no GitHub `maiaoazem/site2028`, conta suspensa). O Claude envia pelo computador da Maia: a chave de acesso fica no arquivo `poly.xml` em `Documents/2028/GitLab` (nunca copiar a chave para o repositório nem para a conversa).
+**Repositório:** GitHub `maiaoazem/gira.guru` (desde 26 nov. 2026). O Cloudflare está ligado a ele (Workers & Pages → maia-oazem → Settings → Build) e publica sozinho a cada push na `main`.
+Histórico: GitLab `laboratelie-group/site2028` (8 a 26 nov. 2026); antes, GitHub `maiaoazem/site2028` (conta suspensa). Esses dois não são mais usados.
 
-**Segurança da chave (obrigatório em todo envio):**
-- Ler a chave só de dentro do comando (`T=$(grep -oE 'glpat-[A-Za-z0-9._-]+' poly.xml)`), nunca exibir, nunca gravar em `.git/config` nem em arquivo do repositório; mascarar a chave em qualquer saída (`sed "s/$T/***/g"`).
-- Trabalhar num clone fora da pasta `Documents/2028/GitLab`, para o `poly.xml` nunca ficar dentro do repositório.
-- Instalar a trava em todo clone novo: `ln -sf ../../scripts/checar-segredos.sh .git/hooks/pre-commit` — ela bloqueia commits com chaves.
-- `.gitignore` ignora `poly.xml` e outros arquivos de chave; `.assetsignore` impede que sejam publicados no site.
+**Como o Claude envia:** pela conexão do GitHub no próprio Claude, a partir de um clone na nuvem. Não há chave nem token para ler, copiar ou guardar. Antes de mexer, sempre atualizar o clone (`git pull --ff-only origin main`).
+
+**Cópia no computador da Maia:** é backup. Antes de editar algo por lá, `git pull` para não reenviar arquivos antigos nem desfazer mudanças feitas pelo Claude.
+
+**Segurança (obrigatório em todo clone e todo envio):**
+- Instalar a trava em todo clone novo: `ln -sf ../../scripts/checar-segredos.sh .git/hooks/pre-commit`. Ela bloqueia commits com chaves.
+- Nunca colocar chaves, tokens ou senhas em arquivos do repositório nem na conversa. O repositório é público: tudo nele, inclusive o histórico, pode ser lido por qualquer pessoa.
+- `.gitignore` ignora `poly.xml`, `.env`, `.wrangler` e outros arquivos de chave ou cache; `.assetsignore` impede que sejam publicados no site.
 
 ## Lab aberto (`/lab`)
 
