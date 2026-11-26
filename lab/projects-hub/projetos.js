@@ -57,6 +57,8 @@ const NUMEROS = [
   { texto: "+{n} years in futures design", n: 7 },
   { texto: "+{n} years studying the Post-AI futures", n: 4 },
 ];
+const NUMEROS_POR_VEZ = 3;      // quantos aparecem de cada vez (sorteados)
+const NUMEROS_INTERVALO = 4500; // a cada quantos milissegundos troca
 const PAIS_DE_CASA = "BR"; // o que não é daqui conta como internacional
 
 // Cor de cada realm: o ponto no mapa tem a cor do primeiro realm do projeto.
@@ -166,6 +168,10 @@ a{color:inherit}
 .numeros{position:absolute;z-index:5;right:var(--passo-3);top:var(--passo-3);width:min(300px,26vw);display:flex;flex-direction:column;pointer-events:none}
 .numero{padding:7px 0 8px;border-top:1px solid var(--fio)}
 .numero:last-child{border-bottom:1px solid var(--fio)}
+.numero b,.numero span{transition:opacity var(--tempo-fecha) var(--curva-portal),transform var(--tempo-fecha) var(--curva-portal);transition-delay:var(--d,0ms)}
+.numero.sai b,.numero.sai span{opacity:0;transform:translateY(-10px)}
+.numero.entra b,.numero.entra span{animation:sobe var(--tempo-abre) var(--curva-pouso) both;animation-delay:var(--d,0ms)}
+@keyframes sobe{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .numero span{display:block;font-size:14px;line-height:1.25;letter-spacing:-.005em}
 .numero b{display:block;font-size:clamp(30px,2.7vw,40px);line-height:.92;font-weight:500;letter-spacing:-.045em;color:var(--rosa);margin:1px 0 3px}
 .globo canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:pan-y;outline:none}
@@ -319,7 +325,8 @@ a{color:inherit}
 .recs-vazio{color:var(--texto-suave)}
 
 @media (max-width:860px){
-  .numeros{position:static;width:auto;padding:var(--passo-3) var(--passo-2) 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--passo-2)}
+  .numeros{position:static;width:auto;padding:var(--passo-3) var(--passo-2) 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--passo-2);align-items:start}
+  .numero{border-bottom:1px solid var(--fio)}
   .abas-f{flex-wrap:wrap}
   .globo{height:72vh;min-height:420px}
   .legenda{left:var(--passo-2);bottom:76px}
@@ -517,13 +524,32 @@ function iniciar(HOST) {
       internacionais: recs.filter(r => r.lugar ? r.lugar.chave !== PAIS_DE_CASA : !/^(brazil|brasil)$/i.test(r.pais)).length,
       paises: paises.size,
     };
-    $("numeros").innerHTML = NUMEROS.map(l => {
+    const linhas = NUMEROS.map(l => {
       const n = typeof l.n === "number" ? l.n : conta[l.n] || 0;
       if (!n) return "";
       const t = (n === 1 && l.um) || l.texto;
       const m = t.match(/^(.*?)(\S*\{n\}\S*)(.*)$/); if (!m) return `<p class="numero"><span>${esc(t)}</span></p>`;
       return `<p class="numero">${m[1].trim() ? `<span>${esc(m[1].trim())}</span>` : ""}<b>${esc(m[2].replace("{n}", n))}</b>${m[3].trim() ? `<span>${esc(m[3].trim())}</span>` : ""}</p>`;
-    }).join("");
+    }).filter(Boolean);
+    // NUMEROS_POR_VEZ de cada vez, sorteados; a cada troca, os que saem sobem e somem, os novos sobem de dentro
+    const caixa = $("numeros"), k = Math.min(NUMEROS_POR_VEZ, linhas.length);
+    let atual = [];
+    const sorteia = () => {
+      const fora = linhas.map((_, i) => i).filter(i => !atual.includes(i)).sort(() => Math.random() - .5);
+      const dentro = atual.slice().sort(() => Math.random() - .5);
+      return [...fora, ...dentro].slice(0, k).sort((a, b) => a - b);
+    };
+    const mostra = anima => {
+      atual = sorteia();
+      caixa.innerHTML = atual.map((i, n) => linhas[i].replace('<p class="numero">', `<p class="numero${anima ? " entra" : ""}" style="--d:${n * 90}ms">`)).join("");
+    };
+    mostra(false);
+    if (reduz || linhas.length <= k) return;
+    setInterval(() => {
+      if (document.hidden) return;
+      caixa.querySelectorAll(".numero").forEach((e, n) => { e.style.setProperty("--d", n * 70 + "ms"); e.classList.add("sai"); });
+      setTimeout(() => mostra(true), 450 + k * 70);
+    }, NUMEROS_INTERVALO);
   }
 
   function atualizar() {
