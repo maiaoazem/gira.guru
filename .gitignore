@@ -7,3 +7,6 @@ poly.xml
 .env.*
 chave*
 *secret*
+
+# Cache local da Cloudflare (wrangler dev): nunca entra no repositório nem no site
+.wrangler

@@ -8,3 +8,4 @@ _worker.js
 poly.xml
 .env
 scripts
+.wrangler
