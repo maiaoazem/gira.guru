@@ -38,6 +38,27 @@ const PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRHS_E6qH44g4y
 const GIDS = { p: "0", r: "1180840986", o: "2078083166" }; // projetos · reconhecimentos · organizações
 const BASE_IMAGENS = "https://gira.guru/lab/repo/images/";
 
+/* ================= NÚMEROS À DIREITA DO MAPA (edite aqui) =================
+   Cada linha vira um bloco, um embaixo do outro, na ordem desta lista.
+   texto: a frase; {n} é o número em destaque (o que estiver colado nele, como "+", vai junto).
+   n:     um número fixo (15) ou uma contagem automática da planilha:
+            "projetos"        todos os projetos
+            "vitorias"        reconhecimentos com resultado Winner
+            "internacionais"  reconhecimentos fora do Brasil (qualquer resultado)
+            "paises"          países alcançados (países dos reconhecimentos + áreas dos projetos)
+   um:    (opcional) a frase para quando o número for 1.
+   Linhas cujo número dá 0 não aparecem. Para tirar uma linha, apague-a; para mudar a ordem, mova-a. */
+const NUMEROS = [
+  { texto: "+{n} projects", um: "{n} project", n: "projetos" },
+  { texto: "{n} awards", um: "{n} award", n: "vitorias" },
+  { texto: "{n} international accolades", um: "{n} international accolade", n: "internacionais" },
+  { texto: "reaching more than {n} countries", um: "reaching {n} country", n: "paises" },
+  { texto: "+{n} years in technology and innovation", n: 15 },
+  { texto: "+{n} years in futures design", n: 7 },
+  { texto: "+{n} years studying the Post-AI futures", n: 4 },
+];
+const PAIS_DE_CASA = "BR"; // o que não é daqui conta como internacional
+
 // Cor de cada realm: o ponto no mapa tem a cor do primeiro realm do projeto.
 const REALMS = [
   { re: /futur/i,     nome: "Futures Design",         t: "var(--rosa)",     tv: "var(--rosa-vivo)",     par: "brasa", hex: "#ff3d9a" }, // rosa
@@ -140,7 +161,13 @@ a{color:inherit}
 .item-rec span{color:var(--texto)}
 
 /* globo */
+.palco{position:relative}
 .globo{position:relative;height:min(82vh,820px);min-height:460px;overflow:hidden}
+.numeros{position:absolute;z-index:5;right:var(--passo-3);top:var(--passo-3);width:min(300px,26vw);display:flex;flex-direction:column;pointer-events:none}
+.numero{padding:7px 0 8px;border-top:1px solid var(--fio)}
+.numero:last-child{border-bottom:1px solid var(--fio)}
+.numero span{display:block;font-size:14px;line-height:1.25;letter-spacing:-.005em}
+.numero b{display:block;font-size:clamp(30px,2.7vw,40px);line-height:.92;font-weight:500;letter-spacing:-.045em;color:var(--rosa);margin:1px 0 3px}
 .globo canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:pan-y;outline:none}
 .globo canvas[data-arrastando]{cursor:grabbing}
 .globo canvas[data-sobre]{cursor:pointer}
@@ -292,6 +319,7 @@ a{color:inherit}
 .recs-vazio{color:var(--texto-suave)}
 
 @media (max-width:860px){
+  .numeros{position:static;width:auto;padding:var(--passo-3) var(--passo-2) 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--passo-2)}
   .abas-f{flex-wrap:wrap}
   .globo{height:72vh;min-height:420px}
   .legenda{left:var(--passo-2);bottom:76px}
@@ -317,6 +345,7 @@ const SETA = '<svg class="seta" viewBox="0 0 100 100" aria-hidden="true"><path d
 
 const MARCACAO = `
 <div class="corrida" id="corrida" role="region" aria-label="Projects and recognitions"><div class="trilho" id="trilho"></div></div>
+<div class="palco">
 <section class="globo" id="globo" aria-label="Map of projects and recognitions">
   <canvas id="tela-globo" tabindex="0" aria-label="Globe: drag to rotate, scroll to zoom. Arrow keys also rotate."></canvas>
   <div class="filtros" id="filtros"><div class="abas-f" id="abas-f" role="group" aria-label="List on the map"></div><div class="lista" id="lista" hidden></div></div>
@@ -329,6 +358,8 @@ const MARCACAO = `
   <div class="escolha" id="escolha"></div>
   <p class="vazio-filtro versal" id="vazio">No projects in this selection</p>
 </section>
+<div class="numeros" id="numeros"></div>
+</div>
 <section class="orgs" aria-labelledby="orgs-rot">
   <div class="orgs-topo"><span class="versal" id="orgs-rot">Organizations</span><span class="mono dica" id="orgs-cont"></span></div>
   <div class="orgs-lista" id="orgs" role="group" aria-labelledby="orgs-rot"></div>
@@ -473,8 +504,27 @@ function iniciar(HOST) {
 
   carregarTudo().then(d => {
     M = montar(d.p, d.r, d.o);
-    desenharOrgs(); atualizar(); globo.centrar(); centrarEm(visiveis()); rota();
+    desenharOrgs(); numeros(); atualizar(); globo.centrar(); centrarEm(visiveis()); rota();
   });
+
+  // números à direita do mapa, a partir da planilha e da lista NUMEROS
+  function numeros() {
+    const recs = [...new Map(M.projetos.flatMap(p => p.recs).map(r => [r.cod, r])).values()];
+    const paises = new Set([...recs.map(r => r.lugar), ...M.projetos.flatMap(p => p.lugares)].filter(l => l && !String(l.chave).startsWith("R:")).map(l => l.chave));
+    const conta = {
+      projetos: M.projetos.length,
+      vitorias: recs.filter(r => /winner|vencedor|ganhador|grand prix/i.test(r.reconhecimento)).length,
+      internacionais: recs.filter(r => r.lugar ? r.lugar.chave !== PAIS_DE_CASA : !/^(brazil|brasil)$/i.test(r.pais)).length,
+      paises: paises.size,
+    };
+    $("numeros").innerHTML = NUMEROS.map(l => {
+      const n = typeof l.n === "number" ? l.n : conta[l.n] || 0;
+      if (!n) return "";
+      const t = (n === 1 && l.um) || l.texto;
+      const m = t.match(/^(.*?)(\S*\{n\}\S*)(.*)$/); if (!m) return `<p class="numero"><span>${esc(t)}</span></p>`;
+      return `<p class="numero">${m[1].trim() ? `<span>${esc(m[1].trim())}</span>` : ""}<b>${esc(m[2].replace("{n}", n))}</b>${m[3].trim() ? `<span>${esc(m[3].trim())}</span>` : ""}</p>`;
+    }).join("");
+  }
 
   function atualizar() {
     const V = visiveis();
