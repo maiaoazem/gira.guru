@@ -485,19 +485,20 @@ function iniciar(HOST) {
   });
   // filtro mudou: o mundo se reorganiza e para num projeto relacionado
   function mudouFiltro(rolar) {
-    globo.reorganizar(() => centrarEm(visiveis()));
+    globo.reorganizar(() => centrarEm(visiveis(), null, true));
     atualizar();
     if (rolar) setTimeout(() => $("globo").scrollIntoView({ behavior: reduz ? "auto" : "smooth", block: "start" }), reduz ? 0 : 300);
   }
   // centra o globo num projeto relacionado (o mais relevante com lugar no mapa), ou no país com mais reconhecimentos
-  function centrarEm(V, modo) {
+  function centrarEm(V, modo, giro) {
     let lg = null;
     if (modo === "r") {
       const n = new Map(); V.forEach(p => p.recs.forEach(r => r.lugar && n.set(r.lugar.chave, { lg: r.lugar, c: ((n.get(r.lugar.chave) || {}).c || 0) + 1 })));
       const top = [...n.values()].sort((a, b) => b.c - a.c)[0]; lg = top && top.lg;
     }
     if (!lg) { const p = V.find(p => p.recs.some(r => r.lugar) || p.lugares.length); if (p) lg = (p.recs.find(r => r.lugar) || {}).lugar || p.lugares[0]; }
-    if (lg) globo.voar(lg.lat, lg.lon);
+    if (lg) globo.voar(lg.lat, lg.lon, null, null, giro);
+    else if (giro) globo.voar(null, null, null, null, true); // nada para mostrar: gira no lugar
   }
 
   /* ---------- filtros sobre o mapa ---------- */
@@ -716,11 +717,14 @@ function iniciar(HOST) {
       const m = pts.slice().sort((a, b) => b.itens.length - a.itens.length)[0];
       lon0 = m.lon; lat0 = Math.max(-35, Math.min(45, m.lat * .6)); sujo = true;
     }
-    function voar(lat, lon, kAlvo, fim) {
+    // giro: ao refazer o globo, se o destino é o mesmo lugar (ou perto), dá pelo menos uma volta inteira
+    function voar(lat, lon, kAlvo, fim, giro) {
+      if (lat == null) { lat = lat0; lon = lon0; }
       const la = Math.max(-70, Math.min(70, lat)), ka = kAlvo || k;
       if (reduz) { lon0 = lon; lat0 = la; k = ka; sujo = true; if (fim) requestAnimationFrame(fim); return; }
-      const d = ((lon - lon0 + 540) % 360) - 180;
-      voo = { t0: performance.now(), a: [lon0, lat0, k], b: [lon0 + d, la, ka], fim };
+      let d = ((lon - lon0 + 540) % 360) - 180, dur = 900;
+      if (giro && Math.abs(d) < 45) { d += d < 0 ? -360 : 360; dur = 1500; }
+      voo = { t0: performance.now(), a: [lon0, lat0, k], b: [lon0 + d, la, ka], fim, dur };
     }
     // leva o globo até um lugar e abre a seleção de projetos dali
     function irPara(chave, destaque) {
@@ -734,7 +738,7 @@ function iniciar(HOST) {
       const m = (lo + hi) / 2; return 3 * c[1] * m * (1 - m) ** 2 + 3 * c[3] * m * m * (1 - m) + m ** 3;
     };
     function passoVoo() {
-      const t = Math.min(1, (performance.now() - voo.t0) / 900), e = ease(t);
+      const t = Math.min(1, (performance.now() - voo.t0) / (voo.dur || 900)), e = ease(t);
       lon0 = voo.a[0] + (voo.b[0] - voo.a[0]) * e; lat0 = voo.a[1] + (voo.b[1] - voo.a[1]) * e; k = voo.a[2] + (voo.b[2] - voo.a[2]) * e; sujo = true;
       if (t >= 1) { const f = voo.fim; voo = null; if (f) { desenhar(); f(); } }
     }
