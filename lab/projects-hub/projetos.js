@@ -61,20 +61,20 @@ const resultadoDe = s => RESULTADOS.find(r => r.re.test(s || "")) || RESULTADO_O
 
 // Regiões e continentes (para a coluna "area" e para países fora da lista)
 const REGIOES = [
-  [/^(europe|europa|eu|uniao europeia|european union)$/, 50, 14, "Europa"],
-  [/^(asia)$/, 34, 96, "Ásia"],
-  [/^(east asia|asia oriental|leste asiatico)$/, 35, 120, "Leste Asiático"],
-  [/^(southeast asia|sudeste asiatico)$/, 6, 110, "Sudeste Asiático"],
-  [/^(africa)$/, 4, 20, "África"],
-  [/^(north america|america do norte|norteamerica|america del norte)$/, 45, -100, "América do Norte"],
-  [/^(south america|america do sul|sudamerica|america del sur)$/, -15, -60, "América do Sul"],
-  [/^(latin america|america latina|latam|latinoamerica|latinoamérica)$/, -8, -62, "América Latina"],
-  [/^(central america|america central|centroamerica)$/, 13, -86, "América Central"],
-  [/^(caribbean|caribe)$/, 18, -72, "Caribe"],
-  [/^(middle east|oriente medio|mena)$/, 29, 45, "Oriente Médio"],
+  [/^(europe|europa|eu|uniao europeia|european union)$/, 50, 14, "Europe"],
+  [/^(asia)$/, 34, 96, "Asia"],
+  [/^(east asia|asia oriental|leste asiatico)$/, 35, 120, "East Asia"],
+  [/^(southeast asia|sudeste asiatico)$/, 6, 110, "Southeast Asia"],
+  [/^(africa)$/, 4, 20, "Africa"],
+  [/^(north america|america do norte|norteamerica|america del norte)$/, 45, -100, "North America"],
+  [/^(south america|america do sul|sudamerica|america del sur)$/, -15, -60, "South America"],
+  [/^(latin america|america latina|latam|latinoamerica|latinoamérica)$/, -8, -62, "Latin America"],
+  [/^(central america|america central|centroamerica)$/, 13, -86, "Central America"],
+  [/^(caribbean|caribe)$/, 18, -72, "Caribbean"],
+  [/^(middle east|oriente medio|mena)$/, 29, 45, "Middle East"],
   [/^(oceania|australasia)$/, -24, 140, "Oceania"],
-  [/^(nordics|nordic|escandinavia|scandinavia|paises nordicos)$/, 63, 16, "Países Nórdicos"],
-  [/^(americas|america)$/, 10, -80, "Américas"],
+  [/^(nordics|nordic|escandinavia|scandinavia|paises nordicos)$/, 63, 16, "Nordics"],
+  [/^(americas|america)$/, 10, -80, "Americas"],
 ];
 
 /* ================= GEOGRAFIA ================= */
@@ -119,6 +119,8 @@ a{color:inherit}
 .etq{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;background:var(--t,var(--papel));color:var(--tt,var(--sobre-faixa));font-family:var(--mono);font-size:12px;line-height:1.2;white-space:nowrap}
 .etq[data-marcada]{background:var(--mata);color:var(--ouro-vivo)}
 .etq[data-contorno]{background:transparent;color:inherit;box-shadow:inset 0 0 0 1px currentColor}
+.etq-link{cursor:pointer;border:0}
+.etq-link:hover,.etq-link:focus-visible{background:var(--mata);color:var(--ouro-vivo);outline:none}
 .etq-grot{font-family:var(--grotesca);font-weight:500;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:4px 8px 3px}
 
 /* corrida: o letreiro de projetos */
@@ -162,9 +164,9 @@ a{color:inherit}
 .escolha-topo .mono{font-size:12px;color:var(--texto-suave)}
 .opcoes{display:flex;flex-direction:column;gap:12px;padding:12px}
 .opc{display:flex;flex-direction:column;width:100%;text-align:left;color:var(--sobre-faixa)}
-.opc-cabeca{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:10px 12px 12px;background:var(--t);transition:background var(--tempo-fecha) var(--curva-portal)}
-.opc-cabeca strong{font-size:20px;line-height:1.05;font-weight:500;letter-spacing:-.02em;font-stretch:86%;transition:font-stretch var(--tempo-fecha) var(--curva-portal)}
-.opc-cabeca .etq{background:var(--papel)}
+.opc-cabeca{display:flex;align-items:center;padding:7px 12px 8px;background:var(--t);transition:background var(--tempo-fecha) var(--curva-portal)}
+.opc-cabeca strong{font-size:17px;line-height:1.1;font-weight:500;letter-spacing:-.02em;font-stretch:86%;transition:font-stretch var(--tempo-fecha) var(--curva-portal)}
+.esc-linhas .etq{align-self:flex-start;margin-bottom:3px}
 .opc-corpo{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;padding:10px 12px 12px 0;color:var(--papel)}
 .opc-corpo img,.opc-corpo .opc-sem{display:block;width:76px;height:76px;object-fit:cover;background:var(--tv)}
 .esc-linhas{display:flex;flex-direction:column;gap:3px;font-size:13px;line-height:1.3;color:var(--texto-suave)}
@@ -191,6 +193,12 @@ a{color:inherit}
 .linha-f .sub b{font-weight:500;color:var(--texto)}
 .linha-f:hover,.linha-f:focus-visible{background:var(--ouro-vivo);color:var(--mata);outline:none}
 .linha-f:hover .sub,.linha-f:hover .sub b,.linha-f:hover .mono,.linha-f:focus-visible .sub,.linha-f:focus-visible .sub b,.linha-f:focus-visible .mono{color:var(--mata)}
+.linha-f .marca{position:relative;display:inline-block}
+.linha-f .marca .circ{inset:-6px -10px;width:calc(100% + 20px);height:calc(100% + 12px)}
+.linha-f[aria-pressed="true"] .circ{opacity:1}
+.linha-f[aria-pressed="true"] .circ path{animation:risca var(--tempo-abre) var(--curva-pouso) forwards}
+.linha-f:hover .circ path,.linha-f:focus-visible .circ path{stroke:var(--mata)}
+.linha-limpa strong{font-size:13px;font-weight:500;letter-spacing:.12em;text-transform:uppercase}
 .lista-vazia{padding:12px;border-bottom:1px solid var(--fio);color:var(--texto-suave)}
 .vazio-filtro{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:none}
 .vazio-filtro[data-on]{display:block}
@@ -300,21 +308,21 @@ const CIRC = '<svg class="circ" viewBox="0 0 100 40" preserveAspectRatio="none" 
 const SETA = '<svg class="seta" viewBox="0 0 100 100" aria-hidden="true"><path d="M20 80 L80 20 M36 20 H80 V64"/></svg>';
 
 const MARCACAO = `
-<div class="corrida" id="corrida" role="region" aria-label="Projetos e reconhecimentos"><div class="trilho" id="trilho"></div></div>
-<section class="globo" id="globo" aria-label="Mapa dos projetos e reconhecimentos">
-  <canvas id="tela-globo" tabindex="0" aria-label="Globo: arraste para girar, role para aproximar. Setas do teclado também giram."></canvas>
-  <div class="filtros" id="filtros"><div class="abas-f" id="abas-f" role="group" aria-label="Listar no mapa"></div><div class="lista" id="lista" hidden></div></div>
+<div class="corrida" id="corrida" role="region" aria-label="Projects and recognitions"><div class="trilho" id="trilho"></div></div>
+<section class="globo" id="globo" aria-label="Map of projects and recognitions">
+  <canvas id="tela-globo" tabindex="0" aria-label="Globe: drag to rotate, scroll to zoom. Arrow keys also rotate."></canvas>
+  <div class="filtros" id="filtros"><div class="abas-f" id="abas-f" role="group" aria-label="List on the map"></div><div class="lista" id="lista" hidden></div></div>
   <div class="legenda" id="legenda"></div>
   <div class="controles">
-    <span class="dica versal">Arraste para girar · role para aproximar</span>
-    <div class="zoom"><button type="button" id="mais" aria-label="Aproximar"><svg viewBox="0 0 14 14"><path d="M7 1V13M1 7H13"/></svg></button><button type="button" id="menos" aria-label="Afastar"><svg viewBox="0 0 14 14"><path d="M1 7H13"/></svg></button></div>
+    <span class="dica versal">Drag to rotate · scroll to zoom</span>
+    <div class="zoom"><button type="button" id="mais" aria-label="Zoom in"><svg viewBox="0 0 14 14"><path d="M7 1V13M1 7H13"/></svg></button><button type="button" id="menos" aria-label="Zoom out"><svg viewBox="0 0 14 14"><path d="M1 7H13"/></svg></button></div>
   </div>
   <div class="balao" id="balao" role="status"></div>
   <div class="escolha" id="escolha"></div>
-  <p class="vazio-filtro versal" id="vazio">Nenhum projeto nesta seleção</p>
+  <p class="vazio-filtro versal" id="vazio">No projects in this selection</p>
 </section>
 <section class="orgs" aria-labelledby="orgs-rot">
-  <div class="orgs-topo"><span class="versal" id="orgs-rot">Organizações</span><span class="mono dica" id="orgs-cont"></span></div>
+  <div class="orgs-topo"><span class="versal" id="orgs-rot">Organizations</span><span class="mono dica" id="orgs-cont"></span></div>
   <div class="orgs-lista" id="orgs" role="group" aria-labelledby="orgs-rot"></div>
 </section>
 <div class="tela" id="tela" role="dialog" aria-modal="true" aria-labelledby="proj-titulo" hidden></div>
@@ -446,12 +454,14 @@ function iniciar(HOST) {
   const MODO = (HOST.getAttribute("modo") || "completo").toLowerCase();
   const DESTINO = HOST.getAttribute("destino") || BASE;
   const ROOT = HOST.attachShadow({ mode: "open" });
-  ROOT.innerHTML = "<style>" + ESTILO + "</style><div class=\"raiz\">" + MARCACAO + "</div>";
+  ROOT.innerHTML = "<style>" + ESTILO + "</style><div class=\"raiz\" lang=\"en\">" + MARCACAO + "</div>";
   const $ = id => ROOT.getElementById(id);
   const reduz = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  let M = null, filtro = new Set();
-  const visiveis = () => M.projetos.filter(p => !filtro.size || [...p.orgs, ...p.parceiros].some(o => filtro.has(o)));
+  let M = null, filtro = new Set(), filtroRealm = new Set();
+  const porOrg = () => M.projetos.filter(p => !filtro.size || [...p.orgs, ...p.parceiros].some(o => filtro.has(o)));
+  const temRealm = p => p.realms.some(n => filtroRealm.has(realmDe(n).nome));
+  const visiveis = () => porOrg().filter(p => !filtroRealm.size || temRealm(p));
 
   carregarTudo().then(d => {
     M = montar(d.p, d.r, d.o);
@@ -462,9 +472,9 @@ function iniciar(HOST) {
     const V = visiveis();
     const presentes = [...new Map(V.map(p => [p.realm.nome, p.realm])).values()];
     $("legenda").innerHTML = `<div class="legenda-linha">${presentes.map(r => `<span class="leg"><i style="--c:${r.hex}"></i>${esc(r.nome)}</span>`).join("")}</div>
-      <div class="legenda-linha"><span class="leg"><i data-forma="vazio"></i>Reconhecimento</span><span class="leg"><i data-forma="o" style="--c:var(--papel)"></i>Área de atuação</span></div>`;
+      <div class="legenda-linha"><span class="leg"><i data-forma="vazio"></i>Recognition</span><span class="leg"><i data-forma="o" style="--c:var(--papel)"></i>Area</span></div>`;
     $("vazio").toggleAttribute("data-on", !V.length);
-    $("orgs-cont").textContent = plural(V.length, "projeto", "projetos");
+    $("orgs-cont").textContent = plural(V.length, "project", "projects");
     letreiro(V);
     globo.marcadores(V);
     filtros(V);
@@ -477,9 +487,13 @@ function iniciar(HOST) {
     LUG = {};
     const pega = lg => LUG[lg.chave] || (LUG[lg.chave] = { chave: lg.chave, nome: lg.nome, lat: lg.lat, lon: lg.lon, recs: [], areas: [] });
     V.forEach(p => { p.recs.forEach(r => r.lugar && pega(r.lugar).recs.push({ p, r })); p.lugares.forEach(lg => pega(lg).areas.push(p)); });
-    const L = Object.values(LUG), comRec = L.filter(l => l.recs.length), comArea = L.filter(l => l.areas.length);
+    const L = Object.values(LUG), comRec = L.filter(l => l.recs.length);
     const nRec = V.reduce((n, p) => n + p.recs.length, 0);
-    const abas = [["p", "Projetos", V.length], ["r", "Reconhecimentos", nRec], ["a", "Áreas de atuação", comArea.length]];
+    // realms: contados sobre o filtro de organização, para a lista não sumir ao selecionar
+    const base = porOrg(), RL = new Map();
+    base.forEach(p => p.realms.forEach(n => { const r = realmDe(n); const e = RL.get(r.nome) || { r, n: 0 }; e.n++; RL.set(r.nome, e); }));
+    const realmsL = [...RL.values()].sort((a, b) => b.n - a.n || a.r.nome.localeCompare(b.r.nome));
+    const abas = [["p", "Projects", V.length], ["r", "Recognitions", nRec], ["a", "Realms", realmsL.length]];
     $("abas-f").innerHTML = abas.map(([k, t, n]) => `<button type="button" data-a="${k}" aria-pressed="${aba === k}" aria-controls="lista">${t}<span class="mono">${String(n).padStart(2, "0")}</span>${CIRC}</button>`).join("");
     const lugaresDe = p => [...new Map([...p.recs.map(r => r.lugar), ...p.lugares].filter(Boolean).map(l => [l.chave, l])).values()];
     let html = "";
@@ -487,13 +501,13 @@ function iniciar(HOST) {
       const ls = lugaresDe(p);
       return `<button type="button" class="linha-f" data-p="${esc(p.cod)}" data-chave="${esc(ls[0] ? ls[0].chave : "")}"><i style="--c:${p.realm.hex}"></i><strong>${esc(p.titulo)}</strong><span class="mono">${esc(p.cod)}</span>
         <span class="sub"><span>${esc(p.tipo)}</span>${ls.map(l => `<b>${esc(l.nome)}</b>`).join("")}</span></button>`;
-    }).join("") || '<p class="lista-vazia versal">Nenhum projeto</p>';
+    }).join("") || '<p class="lista-vazia versal">No projects</p>';
     if (aba === "r") html = comRec.sort((a, b) => b.recs.length - a.recs.length || a.nome.localeCompare(b.nome)).map(l =>
       `<button type="button" class="linha-f" data-chave="${esc(l.chave)}"><i style="--c:${l.recs[0].p.realm.hex}"></i><strong>${esc(l.nome)}</strong><span class="mono">${String(l.recs.length).padStart(2, "0")}</span>
-        <span class="sub">${l.recs.map(x => `<span><b>${esc(x.r.reconhecimento)}</b> · ${esc(x.r.titulo)}</span>`).join("")}</span></button>`).join("") || '<p class="lista-vazia versal">Nenhum reconhecimento</p>';
-    if (aba === "a") html = comArea.sort((a, b) => b.areas.length - a.areas.length || a.nome.localeCompare(b.nome)).map(l =>
-      `<button type="button" class="linha-f" data-chave="${esc(l.chave)}"><i style="--c:${l.areas[0].realm.hex}"></i><strong>${esc(l.nome)}</strong><span class="mono">${String(l.areas.length).padStart(2, "0")}</span>
-        <span class="sub">${l.areas.map(p => `<span>${esc(p.titulo)}</span>`).join("")}</span></button>`).join("") || '<p class="lista-vazia versal">Nenhuma área de atuação além de global</p>';
+        <span class="sub">${l.recs.map(x => `<span><b>${esc(x.r.reconhecimento)}</b> · ${esc(x.r.titulo)}</span>`).join("")}</span></button>`).join("") || '<p class="lista-vazia versal">No recognitions</p>';
+    if (aba === "a") html = (filtroRealm.size ? '<button type="button" class="linha-f linha-limpa" data-realm=""><i style="--c:transparent"></i><strong>All realms</strong></button>' : "") +
+      realmsL.map(({ r, n }) => `<button type="button" class="linha-f" data-realm="${esc(r.nome)}" aria-pressed="${filtroRealm.has(r.nome)}"><i style="--c:${r.hex}"></i><strong><span class="marca">${esc(r.nome)}${CIRC}</span></strong><span class="mono">${String(n).padStart(2, "0")}</span>
+        <span class="sub">${plural(n, "project", "projects")}</span></button>`).join("") || '<p class="lista-vazia versal">No realms</p>';
     $("lista").innerHTML = html;
     $("lista").hidden = !aba;
   }
@@ -503,6 +517,11 @@ function iniciar(HOST) {
   });
   $("lista").addEventListener("click", e => {
     const b = e.target.closest(".linha-f"); if (!b) return;
+    if (b.dataset.realm !== undefined) { // realms: seleção múltipla, a lista fica aberta
+      const n = b.dataset.realm;
+      if (!n) filtroRealm.clear(); else filtroRealm.has(n) ? filtroRealm.delete(n) : filtroRealm.add(n);
+      return atualizar();
+    }
     const ch = b.dataset.chave;
     if (!ch) return abrir(b.dataset.p); // projeto só global, sem lugar no mapa
     aba = null; filtros(visiveis());
@@ -563,7 +582,7 @@ function iniciar(HOST) {
 
   /* ---------- organizações ---------- */
   function desenharOrgs() {
-    $("orgs").innerHTML = `<button type="button" class="org" data-o="" aria-pressed="true"><span class="org-nome"><strong>Todas</strong></span>${CIRC}</button>` +
+    $("orgs").innerHTML = `<button type="button" class="org" data-o="" aria-pressed="true"><span class="org-nome"><strong>All</strong></span>${CIRC}</button>` +
       M.orgs.map(o => `<button type="button" class="org" data-o="${esc(o.cod)}" aria-pressed="false" title="${esc([o.tipo, o.papel].filter(Boolean).join(" · "))}">
         ${o.logo ? `<img src="${esc(o.logo)}" alt="" loading="lazy">` : ""}<span class="org-nome"><strong>${esc(o.nome)}</strong></span>${CIRC}</button>`).join("");
     $("orgs").addEventListener("click", e => {
@@ -759,7 +778,7 @@ function iniciar(HOST) {
       const linhas = m.forma === "r"
         ? m.itens.map(it => `<span>${esc(it.r.reconhecimento)} · ${esc(it.r.titulo)} · ${esc(it.p.titulo)}</span>`)
         : [...new Set(m.itens.map(it => it.p.titulo))].map(t => `<span>${esc(t)}</span>`);
-      b.innerHTML = `<b class="versal">${esc(m.nome)} · ${m.forma === "r" ? plural(m.itens.length, "reconhecimento", "reconhecimentos") : "área de atuação"}</b>${linhas.join("")}`;
+      b.innerHTML = `<b class="versal">${esc(m.nome)} · ${m.forma === "r" ? plural(m.itens.length, "recognition", "recognitions") : "area"}</b>${linhas.join("")}`;
       const r = box.getBoundingClientRect();
       b.style.left = Math.min(r.width - 310, h.x + 18) + "px"; b.style.top = Math.max(8, h.y - 12) + "px";
       b.setAttribute("data-on", "");
@@ -781,11 +800,11 @@ function iniciar(HOST) {
       }));
       const lista = [...ps.values()].sort((a, b) => (b.p.cod === destaque) - (a.p.cod === destaque) || b.p.rel - a.p.rel || a.p.i - b.p.i);
       const es = $("escolha"), m0 = ms[0];
-      es.innerHTML = `<div class="escolha-topo"><span class="versal">${esc(m0.nome)}</span><span class="mono">${plural(lista.length, "projeto", "projetos")}</span></div><div class="opcoes">` +
+      es.innerHTML = `<div class="escolha-topo"><span class="versal">${esc(m0.nome)}</span><span class="mono">${plural(lista.length, "project", "projects")}</span></div><div class="opcoes">` +
         lista.map(({ p, recs, area }) => `<button type="button" class="opc" data-p="${esc(p.cod)}" style="--t:${p.realm.t};--tv:${p.realm.tv};--stv:${p.realm.sobreVivo || "var(--sobre-faixa)"}">
-          <span class="opc-cabeca"><strong>${esc(p.titulo)}</strong><span class="etq etq-grot">${esc(p.tipo)}</span></span>
+          <span class="opc-cabeca"><strong>${esc(p.titulo)}</strong></span>
           <span class="opc-corpo">${p.imagens[0] ? `<img src="${esc(p.imagens[0])}" alt="">` : '<span class="opc-sem"></span>'}
-            <span class="esc-linhas">${recs.map(r => `<span><b>${esc(r.reconhecimento)}</b> · ${esc(r.titulo)} · ${esc(r.ano)}</span>`).join("")}${area ? "<span>Área de atuação</span>" : ""}</span></span>
+            <span class="esc-linhas"><span class="etq etq-grot" style="--t:${p.realm.t}">${esc(p.tipo)}</span>${recs.map(r => `<span><b>${esc(r.reconhecimento)}</b> · ${esc(r.titulo)} · ${esc(r.ano)}</span>`).join("")}${area ? "<span>Area</span>" : ""}</span></span>
         </button>`).join("") + "</div>";
       const [x, y] = proj(m0.lat, m0.lon);
       es.setAttribute("data-on", "");
@@ -815,24 +834,24 @@ function iniciar(HOST) {
   }
   function desenharTela(p, aqui) {
     const r = p.realm, T = $("tela");
-    const realmsEtq = p.realms.map(n => { const x = realmDe(n); return `<span class="etq etq-grot" style="--t:${x.tv};--tt:${x.sobreVivo || "var(--sobre-faixa)"}">${esc(n)}</span>`; }).join("");
+    const realmsEtq = p.realms.map(n => { const x = realmDe(n); return `<button type="button" class="etq etq-grot etq-link" data-realm="${esc(x.nome)}" title="See on the map" style="--t:${x.tv};--tt:${x.sobreVivo || "var(--sobre-faixa)"}">${esc(n)}</button>`; }).join("");
     const areas = p.areas.map(a => esc(a)).join(" · ") || "—";
-    const orgMini = c => { const o = M.orgPor[c]; return o ? `<button type="button" class="org-mini" data-org="${esc(o.cod)}" title="Ver no mapa">${o.logo ? `<img src="${esc(o.logo)}" alt="">` : ""}<span>${esc(o.nome)}${o.papel ? ` <small>· ${esc(o.papel)}</small>` : ""}</span></button>` : `<span class="etq" data-contorno>${esc(c)}</span>`; };
+    const orgMini = c => { const o = M.orgPor[c]; return o ? `<button type="button" class="org-mini" data-org="${esc(o.cod)}" title="See on the map">${o.logo ? `<img src="${esc(o.logo)}" alt="">` : ""}<span>${esc(o.nome)}${o.papel ? ` <small>· ${esc(o.papel)}</small>` : ""}</span></button>` : `<span class="etq" data-contorno>${esc(c)}</span>`; };
     const linhas = [
       ["Realms", realmsEtq],
-      ["Área", areas],
-      [p.orgs.length > 1 ? "Organizações" : "Organização", p.orgs.map(orgMini).join("")],
-      [p.parceiros.length > 1 ? "Parceiros" : "Parceiro", p.parceiros.map(orgMini).join("")],
-      ["Acesso", p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.acesso || dominio(p.link))} ${SETA}</a>` : ""],
+      ["Area", areas],
+      [p.orgs.length > 1 ? "Organizations" : "Organization", p.orgs.map(orgMini).join("")],
+      [p.parceiros.length > 1 ? "Partners" : "Partner", p.parceiros.map(orgMini).join("")],
+      ["Access", p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.acesso || dominio(p.link))} ${SETA}</a>` : ""],
     ].filter(([, v]) => v);
     let aberto = p.recs.findIndex(x => x.lugar && x.lugar.chave === aqui); if (aberto < 0) aberto = 0;
     const recs = p.recs.map((x, i) => {
       const on = i === aberto, c = resultadoDe(x.reconhecimento), aquiTambem = x.lugar && x.lugar.chave === aqui;
-      const ficha = [["Ano", x.ano], ["País", x.pais], ["Categoria", x.categoria], ["Tipo", x.tipo], ["Resultado", x.reconhecimento],
-        ["Fonte", x.ref ? `<a href="${esc(x.ref)}" target="_blank" rel="noopener">${esc(dominio(x.ref))} ${SETA}</a>` : ""]]
-        .filter(([, v]) => v).map(([k, v]) => `<div><dt>${k}</dt><dd>${k === "Fonte" ? v : esc(v)}</dd></div>`).join("");
+      const ficha = [["Year", x.ano], ["Country", x.pais], ["Category", x.categoria], ["Type", x.tipo], ["Result", x.reconhecimento],
+        ["Source", x.ref ? `<a href="${esc(x.ref)}" target="_blank" rel="noopener">${esc(dominio(x.ref))} ${SETA}</a>` : ""]]
+        .filter(([, v]) => v).map(([k, v]) => `<div><dt>${k}</dt><dd>${k === "Source" ? v : esc(v)}</dd></div>`).join("");
       return `<button type="button" class="rec" data-i="${i}" aria-expanded="${on}" style="--t:${c.t};--tv:${c.tv};--stv:${c.stv || "var(--sobre-faixa)"}">
-        <span class="rec-aba">${esc(x.cod)}${aquiTambem ? ' <span class="rec-aqui">· aqui</span>' : ""}</span>
+        <span class="rec-aba">${esc(x.cod)}${aquiTambem ? ' <span class="rec-aqui">· here</span>' : ""}</span>
         <span class="rec-topo"><span class="rec-nome">${esc(x.titulo)}</span></span>
         <span class="rec-corpo">
           <span class="rec-linha"><span class="etq" data-marcada>${esc(x.reconhecimento)}</span><span class="etq etq-grot">${esc(x.pais)}</span><span class="etq">${esc(x.ano)}</span></span>
@@ -844,21 +863,21 @@ function iniciar(HOST) {
     }).join("");
     T.innerHTML = `
       <article class="meia proj" style="--t:${r.t};--tv:${r.tv}">
-        <div class="proj-topo"><button type="button" class="voltar versal" id="fechar"><span aria-hidden="true">←</span> Projetos</button><span class="etq" data-marcada>${esc(p.cod)}</span></div>
+        <div class="proj-topo"><button type="button" class="voltar versal" id="fechar"><span aria-hidden="true">←</span> Projects</button><span class="etq" data-marcada>${esc(p.cod)}</span></div>
         <div class="proj-cabeca">
           <div class="galeria" id="galeria">${p.imagens.map((s, i) => `<img src="${esc(s)}" alt="" class="${i ? "" : "is-on"}">`).join("")}</div>
           <div class="proj-id">
-            <div class="sel" aria-label="Tipo"><span class="on">${esc(p.tipo)}${CIRC}</span></div>
+            <div class="sel" aria-label="Type"><span class="on">${esc(p.tipo)}${CIRC}</span></div>
             <h2 class="proj-titulo" id="proj-titulo">${esc(p.titulo)}</h2>
           </div>
         </div>
         <dl class="ficha">${linhas.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>
         <div class="texto"><p>${primeiroBloco(p.texto)}</p></div>
       </article>
-      <aside class="meia recs" aria-label="Reconhecimentos">
-        <div class="recs-topo"><span class="versal">Reconhecimentos</span><span class="mono">${String(p.recs.length).padStart(2, "0")}</span></div>
+      <aside class="meia recs" aria-label="Recognitions">
+        <div class="recs-topo"><span class="versal">Recognitions</span><span class="mono">${String(p.recs.length).padStart(2, "0")}</span></div>
         ${p.recs.length ? '<div class="mapa-rec" aria-hidden="true"><canvas id="mapa-rec"></canvas></div>' : ""}
-        <div class="recs-lista">${recs || '<p class="recs-vazio versal">Sem reconhecimentos registrados</p>'}</div>
+        <div class="recs-lista">${recs || '<p class="recs-vazio versal">No recognitions yet</p>'}</div>
       </aside>`;
     T.hidden = false;
     ultimoFoco = ultimoFoco || (ROOT.activeElement || document.activeElement);
@@ -866,16 +885,31 @@ function iniciar(HOST) {
     document.documentElement.style.overflow = "hidden";
     $("fechar").addEventListener("click", fechar);
     const recBts = [...T.querySelectorAll(".rec")];
-    const abre = i => { recBts.forEach((b, n) => b.setAttribute("aria-expanded", String(n === i))); aberto = i; mapaRec(p.recs[i]); };
-    recBts.forEach((b, i) => b.addEventListener("click", e => { if (e.target.closest("a")) return; abre(i); }));
+    const listaR = T.querySelector(".recs-lista"), ladoR = T.querySelector(".recs");
+    const abre = (i, anima) => {
+      recBts.forEach((b, n) => b.setAttribute("aria-expanded", String(n === i))); aberto = i; mapaRec(p.recs[i]);
+      // o aberto sobe para perto do mapa (as outras pastas descem, com a curva da marca)
+      const antes = new Map(recBts.map(b => [b, b.getBoundingClientRect().top]));
+      listaR.prepend(recBts[i]);
+      if (anima && !reduz) {
+        recBts.forEach(b => {
+          const d = antes.get(b) - b.getBoundingClientRect().top; if (!d) return;
+          b.animate([{ transform: `translateY(${d}px)` }, { transform: "none" }], { duration: 700, easing: "cubic-bezier(0.7,0,0.2,1)" });
+        });
+        ladoR.scrollTo({ top: 0, behavior: "smooth" });
+        if (innerWidth <= 860) T.querySelector(".mapa-rec").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    };
+    recBts.forEach((b, i) => b.addEventListener("click", e => { if (e.target.closest("a") || b.getAttribute("aria-expanded") === "true") return; abre(i, true); }));
+    if (recBts.length) abre(aberto, false);
     T.querySelectorAll("[data-org]").forEach(b => b.addEventListener("click", () => irOrg(b.dataset.org)));
+    T.querySelectorAll("[data-realm]").forEach(b => b.addEventListener("click", () => irRealm(b.dataset.realm)));
     if (p.recs.length) {
       const cvm = $("mapa-rec");
       const ro = new ResizeObserver(() => { if (!cvm.isConnected) return ro.disconnect(); mapaRec(p.recs[aberto]); });
       ro.observe(cvm.parentElement);
     }
     galeria($("galeria"));
-    if (p.recs.length) mapaRec(p.recs[aberto]);
     setTimeout(() => $("fechar").focus({ preventScroll: true }), 60);
   }
   // mapa do mundo plano, parado, com o país do reconhecimento aberto em destaque
@@ -903,6 +937,12 @@ function iniciar(HOST) {
     }
   }
   // da tela do projeto de volta para o mapa, com a organização selecionada
+  function irRealm(nome) {
+    fechar();
+    filtroRealm = new Set([nome]); aba = "a";
+    atualizar();
+    setTimeout(() => $("globo").scrollIntoView({ behavior: reduz ? "auto" : "smooth", block: "start" }), reduz ? 0 : 300);
+  }
   function irOrg(cod) {
     fechar();
     filtro = new Set([cod]);
@@ -921,7 +961,7 @@ function iniciar(HOST) {
   function galeria(g) {
     const imgs = [...g.querySelectorAll("img")]; if (imgs.length < 2) return;
     const pts = document.createElement("div"); pts.className = "pontos"; g.appendChild(pts);
-    pts.innerHTML = imgs.map((_, k) => `<button type="button" aria-label="Imagem ${k + 1} de ${imgs.length}"></button>`).join("");
+    pts.innerHTML = imgs.map((_, k) => `<button type="button" aria-label="Image ${k + 1} of ${imgs.length}"></button>`).join("");
     const bs = [...pts.children]; let i = 0, parado = false, rel = null;
     const vai = k => { i = (k + imgs.length) % imgs.length; imgs.forEach((im, n) => im.classList.toggle("is-on", n === i)); bs.forEach((b, n) => b.setAttribute("aria-pressed", String(n === i))); };
     const reinicia = () => { clearInterval(rel); if (!reduz) rel = setInterval(() => { if (!parado && !document.hidden && g.isConnected) vai(i + 1); else if (!g.isConnected) clearInterval(rel); }, 4500); };
