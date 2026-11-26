@@ -141,9 +141,12 @@ a{color:inherit}
 .globo canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:pan-y;outline:none}
 .globo canvas[data-arrastando]{cursor:grabbing}
 .globo canvas[data-sobre]{cursor:pointer}
-.legenda{position:absolute;left:var(--passo-3);bottom:var(--passo-3);display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.legenda{position:absolute;z-index:4;left:var(--passo-3);bottom:var(--passo-3);display:flex;flex-direction:column;gap:10px}
 .legenda-linha{display:flex;flex-wrap:wrap;gap:6px}
-.leg{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase}
+.leg{position:relative;display:inline-flex;align-items:center;gap:8px;padding:6px 8px;font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase}
+.leg:hover,.leg:focus-visible{color:var(--ouro-vivo);outline:none}
+.leg .circ{inset:-2px -4px;width:calc(100% + 8px);height:calc(100% + 4px)}
+.legenda-linha:first-child{margin-left:-8px}
 .leg i{width:10px;height:10px;background:var(--c)}
 .leg i[data-forma="o"]{border-radius:50%}
 .leg i[data-forma="vazio"]{background:transparent;box-shadow:inset 0 0 0 1.5px var(--papel)}
@@ -193,12 +196,6 @@ a{color:inherit}
 .linha-f .sub b{font-weight:500;color:var(--texto)}
 .linha-f:hover,.linha-f:focus-visible{background:var(--ouro-vivo);color:var(--mata);outline:none}
 .linha-f:hover .sub,.linha-f:hover .sub b,.linha-f:hover .mono,.linha-f:focus-visible .sub,.linha-f:focus-visible .sub b,.linha-f:focus-visible .mono{color:var(--mata)}
-.linha-f .marca{position:relative;display:inline-block}
-.linha-f .marca .circ{inset:-6px -10px;width:calc(100% + 20px);height:calc(100% + 12px)}
-.linha-f[aria-pressed="true"] .circ{opacity:1}
-.linha-f[aria-pressed="true"] .circ path{animation:risca var(--tempo-abre) var(--curva-pouso) forwards}
-.linha-f:hover .circ path,.linha-f:focus-visible .circ path{stroke:var(--mata)}
-.linha-limpa strong{font-size:13px;font-weight:500;letter-spacing:.12em;text-transform:uppercase}
 .lista-vazia{padding:12px;border-bottom:1px solid var(--fio);color:var(--texto-suave)}
 .vazio-filtro{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:none}
 .vazio-filtro[data-on]{display:block}
@@ -465,19 +462,42 @@ function iniciar(HOST) {
 
   carregarTudo().then(d => {
     M = montar(d.p, d.r, d.o);
-    desenharOrgs(); atualizar(); globo.centrar(); rota();
+    desenharOrgs(); atualizar(); globo.centrar(); centrarEm(visiveis()); rota();
   });
 
   function atualizar() {
     const V = visiveis();
-    const presentes = [...new Map(V.map(p => [p.realm.nome, p.realm])).values()];
-    $("legenda").innerHTML = `<div class="legenda-linha">${presentes.map(r => `<span class="leg"><i style="--c:${r.hex}"></i>${esc(r.nome)}</span>`).join("")}</div>
-      <div class="legenda-linha"><span class="leg"><i data-forma="vazio"></i>Recognition</span><span class="leg"><i data-forma="o" style="--c:var(--papel)"></i>Area</span></div>`;
+    // legenda = filtro de realms (contados sobre o filtro de organização, para não sumirem ao selecionar)
+    const realmsL = [...new Map(porOrg().flatMap(p => p.realms.map(realmDe)).map(r => [r.nome, r])).values()];
+    $("legenda").innerHTML = `<div class="legenda-linha" role="group" aria-label="Realms">${realmsL.map(r => `<button type="button" class="leg" data-realm="${esc(r.nome)}" aria-pressed="${filtroRealm.has(r.nome)}"><i style="--c:${r.hex}"></i>${esc(r.nome)}${CIRC}</button>`).join("")}</div>`;
     $("vazio").toggleAttribute("data-on", !V.length);
     $("orgs-cont").textContent = plural(V.length, "project", "projects");
     letreiro(V);
     globo.marcadores(V);
     filtros(V);
+  }
+
+  $("legenda").addEventListener("click", e => {
+    const b = e.target.closest(".leg"); if (!b) return;
+    const n = b.dataset.realm;
+    filtroRealm.has(n) ? filtroRealm.delete(n) : filtroRealm.add(n);
+    mudouFiltro();
+  });
+  // filtro mudou: o mundo se reorganiza e para num projeto relacionado
+  function mudouFiltro(rolar) {
+    globo.reorganizar(() => centrarEm(visiveis()));
+    atualizar();
+    if (rolar) setTimeout(() => $("globo").scrollIntoView({ behavior: reduz ? "auto" : "smooth", block: "start" }), reduz ? 0 : 300);
+  }
+  // centra o globo num projeto relacionado (o mais relevante com lugar no mapa), ou no país com mais reconhecimentos
+  function centrarEm(V, modo) {
+    let lg = null;
+    if (modo === "r") {
+      const n = new Map(); V.forEach(p => p.recs.forEach(r => r.lugar && n.set(r.lugar.chave, { lg: r.lugar, c: ((n.get(r.lugar.chave) || {}).c || 0) + 1 })));
+      const top = [...n.values()].sort((a, b) => b.c - a.c)[0]; lg = top && top.lg;
+    }
+    if (!lg) { const p = V.find(p => p.recs.some(r => r.lugar) || p.lugares.length); if (p) lg = (p.recs.find(r => r.lugar) || {}).lugar || p.lugares[0]; }
+    if (lg) globo.voar(lg.lat, lg.lon);
   }
 
   /* ---------- filtros sobre o mapa ---------- */
@@ -489,11 +509,7 @@ function iniciar(HOST) {
     V.forEach(p => { p.recs.forEach(r => r.lugar && pega(r.lugar).recs.push({ p, r })); p.lugares.forEach(lg => pega(lg).areas.push(p)); });
     const L = Object.values(LUG), comRec = L.filter(l => l.recs.length);
     const nRec = V.reduce((n, p) => n + p.recs.length, 0);
-    // realms: contados sobre o filtro de organização, para a lista não sumir ao selecionar
-    const base = porOrg(), RL = new Map();
-    base.forEach(p => p.realms.forEach(n => { const r = realmDe(n); const e = RL.get(r.nome) || { r, n: 0 }; e.n++; RL.set(r.nome, e); }));
-    const realmsL = [...RL.values()].sort((a, b) => b.n - a.n || a.r.nome.localeCompare(b.r.nome));
-    const abas = [["p", "Projects", V.length], ["r", "Recognitions", nRec], ["a", "Realms", realmsL.length]];
+    const abas = [["p", "Projects", V.length], ["r", "Recognitions", nRec]];
     $("abas-f").innerHTML = abas.map(([k, t, n]) => `<button type="button" data-a="${k}" aria-pressed="${aba === k}" aria-controls="lista">${t}<span class="mono">${String(n).padStart(2, "0")}</span>${CIRC}</button>`).join("");
     const lugaresDe = p => [...new Map([...p.recs.map(r => r.lugar), ...p.lugares].filter(Boolean).map(l => [l.chave, l])).values()];
     let html = "";
@@ -505,23 +521,16 @@ function iniciar(HOST) {
     if (aba === "r") html = comRec.sort((a, b) => b.recs.length - a.recs.length || a.nome.localeCompare(b.nome)).map(l =>
       `<button type="button" class="linha-f" data-chave="${esc(l.chave)}"><i style="--c:${l.recs[0].p.realm.hex}"></i><strong>${esc(l.nome)}</strong><span class="mono">${String(l.recs.length).padStart(2, "0")}</span>
         <span class="sub">${l.recs.map(x => `<span><b>${esc(x.r.reconhecimento)}</b> · ${esc(x.r.titulo)}</span>`).join("")}</span></button>`).join("") || '<p class="lista-vazia versal">No recognitions</p>';
-    if (aba === "a") html = (filtroRealm.size ? '<button type="button" class="linha-f linha-limpa" data-realm=""><i style="--c:transparent"></i><strong>All realms</strong></button>' : "") +
-      realmsL.map(({ r, n }) => `<button type="button" class="linha-f" data-realm="${esc(r.nome)}" aria-pressed="${filtroRealm.has(r.nome)}"><i style="--c:${r.hex}"></i><strong><span class="marca">${esc(r.nome)}${CIRC}</span></strong><span class="mono">${String(n).padStart(2, "0")}</span>
-        <span class="sub">${plural(n, "project", "projects")}</span></button>`).join("") || '<p class="lista-vazia versal">No realms</p>';
     $("lista").innerHTML = html;
     $("lista").hidden = !aba;
   }
   $("abas-f").addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
     aba = aba === b.dataset.a ? null : b.dataset.a; globo.fecharEscolha(); filtros(visiveis());
+    if (aba) centrarEm(visiveis(), aba);
   });
   $("lista").addEventListener("click", e => {
     const b = e.target.closest(".linha-f"); if (!b) return;
-    if (b.dataset.realm !== undefined) { // realms: seleção múltipla, a lista fica aberta
-      const n = b.dataset.realm;
-      if (!n) filtroRealm.clear(); else filtroRealm.has(n) ? filtroRealm.delete(n) : filtroRealm.add(n);
-      return atualizar();
-    }
     const ch = b.dataset.chave;
     if (!ch) return abrir(b.dataset.p); // projeto só global, sem lugar no mapa
     aba = null; filtros(visiveis());
@@ -590,7 +599,8 @@ function iniciar(HOST) {
       const c = b.dataset.o;
       if (!c) filtro.clear(); else filtro.has(c) ? filtro.delete(c) : filtro.add(c);
       ROOT.querySelectorAll(".org").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.o ? filtro.has(x.dataset.o) : !filtro.size)));
-      atualizar();
+      const r = $("globo").getBoundingClientRect();
+      mudouFiltro(r.top < -r.height * .4 || r.top > innerHeight * .6);
     });
   }
 
@@ -598,7 +608,10 @@ function iniciar(HOST) {
   const globo = (() => {
     const cv = $("tela-globo"), cx = cv.getContext("2d"), box = $("globo");
     let W = 0, H = 0, dpr = 1, lon0 = -30, lat0 = 22, k = 1, R = 100, sujo = true;
-    let marc = [], hits = [], sobre = null, voo = null, arr = null, vx = 0, vy = 0;
+    let marc = [], hits = [], sobre = null, voo = null, arr = null, vx = 0, vy = 0, anim = null, pendente = null;
+    // para a reorganização: cada ponto tem uma direção e um atraso aleatórios
+    const RND = new Float32Array(PONTOS.length);
+    for (let i = 0; i < RND.length; i += 3) { const a = Math.random() * 6.2832, f = .25 + Math.random() * .75; RND[i] = Math.cos(a) * f; RND[i + 1] = Math.sin(a) * f; RND[i + 2] = Math.random() * .3; }
     const rad = Math.PI / 180;
     function medir() {
       dpr = Math.min(2, devicePixelRatio || 1); W = box.clientWidth; H = box.clientHeight;
@@ -620,6 +633,8 @@ function iniciar(HOST) {
       // terra
       const l = lon0 * rad, p = lat0 * rad, cl = Math.cos(l), sl = Math.sin(l), cp = Math.cos(p), sp = Math.sin(p);
       const r0 = Math.max(.7, R * .0052), ox = W / 2, oy = H / 2;
+      const u = anim ? anim.u : -1, esp = R * .5;
+      const mA = !anim ? 1 : u < .2 ? 1 - u / .2 : u < .8 ? 0 : (u - .8) / .2;
       cx.fillStyle = "#fbf8f4";
       for (let i = 0; i < PONTOS.length; i += 3) {
         const X = PONTOS[i], Y = PONTOS[i + 1], Z = PONTOS[i + 2];
@@ -627,7 +642,8 @@ function iniciar(HOST) {
         const x1 = X * cl + Y * sl, y1 = -X * sl + Y * cl; // x1 = cos(la)cos(dl), y1 = cos(la)sin(dl)
         const z = cp * x1 + sp * Z;
         if (z <= 0.02) continue;
-        const sx = ox + R * y1, sy = oy - R * (cp * Z - sp * x1);
+        let sx = ox + R * y1, sy = oy - R * (cp * Z - sp * x1);
+        if (u >= 0) { const t = Math.min(1, Math.max(0, (u - RND[i + 2]) / .7)), a = Math.sin(Math.PI * t) ** 2; sx += RND[i] * esp * a; sy += RND[i + 1] * esp * a; }
         if (sx < -4 || sx > W + 4 || sy < -4 || sy > H + 4) continue;
         const r = r0 * (.45 + .55 * z);
         cx.globalAlpha = .22 + .62 * z;
@@ -636,7 +652,8 @@ function iniciar(HOST) {
       cx.globalAlpha = 1;
       // marcadores
       hits = [];
-      marc.forEach(m => {
+      cx.globalAlpha = mA;
+      if (mA > 0) marc.forEach(m => {
         const [x, y, z] = proj(m.lat, m.lon);
         if (z < 0.08) return;
         const s = (sobre === m ? 1.35 : 1) * (7 + Math.min(4, k));
@@ -657,11 +674,23 @@ function iniciar(HOST) {
           cx.fillStyle = "#1b211d"; cx.fillRect(x + s + 3, y - 9, tw + 8, 18);
           cx.fillStyle = "#ffc414"; cx.fillText(t, x + s + 7, y + 1);
         }
-        hits.push({ m, x, y, r: s + 6 });
+        if (mA === 1) hits.push({ m, x, y, r: s + 6 });
       });
+      cx.globalAlpha = 1;
       sujo = false;
     }
-    (function loop() { if (voo) passoVoo(); if (inercia()) sujo = true; if (sujo) desenhar(); requestAnimationFrame(loop); })();
+    function passoAnim() {
+      anim.u = Math.min(1, (performance.now() - anim.t0) / 1700); sujo = true;
+      if (anim.u >= .5 && !anim.meioFeito) { anim.meioFeito = true; if (pendente) { marc = pendente; pendente = null; } if (anim.meio) anim.meio(); }
+      if (anim.u >= 1) anim = null;
+    }
+    // os pontos de projeto somem, o mundo se desfaz e se recompõe, os pontos voltam
+    function reorganizar(meio) {
+      fecharEscolha(); esconderBalao();
+      if (reduz) { if (meio) setTimeout(meio); return; }
+      anim = { t0: performance.now(), u: 0, meio };
+    }
+    (function loop() { if (anim) passoAnim(); if (voo) passoVoo(); if (inercia()) sujo = true; if (sujo) desenhar(); requestAnimationFrame(loop); })();
 
     // agrupa por lugar: reconhecimentos (país) e áreas de atuação dos projetos (sem "global")
     function marcadores(V) {
@@ -674,9 +703,10 @@ function iniciar(HOST) {
         p.recs.forEach(r => r.lugar && add(r.lugar, { p, r }, "r"));
         p.lugares.forEach(lg => add(lg, { p }, "p"));
       });
-      marc = [...g.values()].map(m => Object.assign(m, { cor: m.itens[0].p.realm.hex }));
+      const novo = [...g.values()].map(m => Object.assign(m, { cor: m.itens[0].p.realm.hex }));
       // áreas primeiro, reconhecimentos por cima
-      marc.sort((a, b) => (a.forma === "r") - (b.forma === "r"));
+      novo.sort((a, b) => (a.forma === "r") - (b.forma === "r"));
+      if (anim && !anim.meioFeito) pendente = novo; else marc = novo;
       fecharEscolha(); sujo = true;
     }
     function centrar() {
@@ -814,7 +844,7 @@ function iniciar(HOST) {
       es.onclick = ev => { const b = ev.target.closest(".opc"); if (b) { fecharEscolha(); abrir(b.dataset.p, chave); } };
       const f = es.querySelector(".opc"); if (f) f.focus({ preventScroll: true });
     }
-    return { marcadores, centrar, voar, irPara, fecharEscolha };
+    return { marcadores, centrar, voar, irPara, fecharEscolha, reorganizar };
   })();
 
   /* ---------- tela do projeto ---------- */
@@ -939,16 +969,14 @@ function iniciar(HOST) {
   // da tela do projeto de volta para o mapa, com a organização selecionada
   function irRealm(nome) {
     fechar();
-    filtroRealm = new Set([nome]); aba = "a";
-    atualizar();
-    setTimeout(() => $("globo").scrollIntoView({ behavior: reduz ? "auto" : "smooth", block: "start" }), reduz ? 0 : 300);
+    filtroRealm = new Set([nome]); aba = null;
+    mudouFiltro(true);
   }
   function irOrg(cod) {
     fechar();
     filtro = new Set([cod]);
     ROOT.querySelectorAll(".org").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.o ? filtro.has(x.dataset.o) : !filtro.size)));
-    atualizar();
-    setTimeout(() => $("globo").scrollIntoView({ behavior: reduz ? "auto" : "smooth", block: "start" }), reduz ? 0 : 300);
+    mudouFiltro(true);
   }
   function fechar() {
     const T = $("tela"); if (T.hidden) return;
