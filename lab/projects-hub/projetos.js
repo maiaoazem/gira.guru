@@ -53,6 +53,7 @@ const NUMEROS = [
   { texto: "{n} awards", um: "{n} award", n: "vitorias" },
   { texto: "{n} international accolades", um: "{n} international accolade", n: "internacionais" },
   { texto: "reaching more than {n} countries", um: "reaching {n} country", n: "paises" },
+  { texto: "+{n} years with gira.", n: 10 },
   { texto: "+{n} years in technology and innovation", n: 15 },
   { texto: "+{n} years in futures design", n: 7 },
   { texto: "+{n} years studying the Post-AI futures", n: 4 },
