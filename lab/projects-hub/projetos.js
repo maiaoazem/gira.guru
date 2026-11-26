@@ -46,6 +46,9 @@ const REALMS = [
   { re: /narrat|story/i, nome: "Narrative Storytelling", t: "var(--ouro)",  tv: "var(--ouro-vivo)",     par: "mel",   hex: "#ffc414" }, // amarelo
 ];
 const REALM_OUTRO = { nome: "", t: "var(--turquesa)", tv: "var(--turquesa-vivo)", par: "mare", hex: "#00d2d3" };
+// quadradinhos de realm, sem texto (no máximo 4 por projeto)
+const quadros = realms => `<span class="rq" aria-label="${esc(realms.map(r => r.nome).join(", "))}">${realms.slice(0, 4).map(r => `<i style="--c:${r.hex}"></i>`).join("")}</span>`;
+const realmsDe = p => [...new Map(p.realms.map(n => realmDe(n)).map(r => [r.nome, r])).values()];
 const realmDe = s => REALMS.find(r => r.re.test(s || "")) || Object.assign({}, REALM_OUTRO, { nome: s });
 
 // Cor do resultado de cada reconhecimento: só o topo da pasta é pintado; o corpo fica claro.
@@ -167,7 +170,9 @@ a{color:inherit}
 .escolha-topo .mono{font-size:12px;color:var(--texto-suave)}
 .opcoes{display:flex;flex-direction:column;gap:12px;padding:12px}
 .opc{display:flex;flex-direction:column;width:100%;text-align:left;color:var(--sobre-faixa)}
-.opc-cabeca{display:flex;align-items:center;padding:7px 12px 8px;background:var(--t);transition:background var(--tempo-fecha) var(--curva-portal)}
+.opc-cabeca{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 12px 8px;background:var(--papel);transition:background var(--tempo-fecha) var(--curva-portal)}
+.opc-cabeca .rq{margin-top:0;align-self:center}
+.opc-cabeca .rq i{box-shadow:0 0 0 1px var(--tinta)}
 .opc-cabeca strong{font-size:17px;line-height:1.1;font-weight:500;letter-spacing:-.02em;font-stretch:86%;transition:font-stretch var(--tempo-fecha) var(--curva-portal)}
 .esc-linhas .etq{align-self:flex-start;margin-bottom:3px}
 .opc-corpo{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;padding:10px 12px 12px 0;color:var(--papel)}
@@ -196,6 +201,11 @@ a{color:inherit}
 .linha-f .sub b{font-weight:500;color:var(--texto)}
 .linha-f:hover,.linha-f:focus-visible{background:var(--ouro-vivo);color:var(--mata);outline:none}
 .linha-f:hover .sub,.linha-f:hover .sub b,.linha-f:hover .mono,.linha-f:focus-visible .sub,.linha-f:focus-visible .sub b,.linha-f:focus-visible .mono{color:var(--mata)}
+.rq{display:inline-flex;gap:2px;margin-top:5px;align-self:start}
+.rq i{display:block;width:10px;height:10px;background:var(--c);box-shadow:0 0 0 1px var(--mata)}
+.linha-f{grid-template-columns:46px minmax(0,1fr) auto}
+.mais-f{display:block;width:100%;padding:10px 12px;border-bottom:1px solid var(--fio);text-align:left;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase}
+.mais-f:hover,.mais-f:focus-visible{color:var(--ouro-vivo);outline:none}
 .lista-vazia{padding:12px;border-bottom:1px solid var(--fio);color:var(--texto-suave)}
 .vazio-filtro{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:none}
 .vazio-filtro[data-on]{display:block}
@@ -286,6 +296,7 @@ a{color:inherit}
   .globo{height:72vh;min-height:420px}
   .legenda{left:var(--passo-2);bottom:76px}
   .filtros{left:var(--passo-2);top:var(--passo-2);width:calc(100% - 32px)}
+  .lista{max-height:34vh}
   .controles{right:var(--passo-2);bottom:var(--passo-2)}
   .dica{display:none}
   .tela{grid-template-columns:1fr;overflow:auto}
@@ -473,6 +484,8 @@ function iniciar(HOST) {
     $("vazio").toggleAttribute("data-on", !V.length);
     $("orgs-cont").textContent = plural(V.length, "project", "projects");
     letreiro(V);
+    // cor do ponto: o realm principal; com filtro de realm, o realm selecionado
+    V.forEach(p => { const sel = filtroRealm.size && realmsDe(p).find(r => filtroRealm.has(r.nome)); p.cor = (sel || p.realm).hex; });
     globo.marcadores(V);
     filtros(V);
   }
@@ -502,7 +515,8 @@ function iniciar(HOST) {
   }
 
   /* ---------- filtros sobre o mapa ---------- */
-  let aba = null, LUG = {};
+  let aba = "p", LUG = {}, todos = false; // a lista de projetos já abre
+  const LIMITE = 12; // depois disso, "Show all"
   function filtros(V) {
     // lugares visíveis: chave → { nome, lat, lon, recs: [{p, r}], areas: [p] }
     LUG = {};
@@ -514,27 +528,28 @@ function iniciar(HOST) {
     $("abas-f").innerHTML = abas.map(([k, t, n]) => `<button type="button" data-a="${k}" aria-pressed="${aba === k}" aria-controls="lista">${t}<span class="mono">${String(n).padStart(2, "0")}</span>${CIRC}</button>`).join("");
     const lugaresDe = p => [...new Map([...p.recs.map(r => r.lugar), ...p.lugares].filter(Boolean).map(l => [l.chave, l])).values()];
     let html = "";
-    if (aba === "p") html = V.map(p => {
+    if (aba === "p") html = (todos ? V : V.slice(0, LIMITE)).map(p => {
       const ls = lugaresDe(p);
-      return `<button type="button" class="linha-f" data-p="${esc(p.cod)}" data-chave="${esc(ls[0] ? ls[0].chave : "")}"><i style="--c:${p.realm.hex}"></i><strong>${esc(p.titulo)}</strong><span class="mono">${esc(p.cod)}</span>
+      return `<button type="button" class="linha-f" data-p="${esc(p.cod)}" data-chave="${esc(ls[0] ? ls[0].chave : "")}">${quadros(realmsDe(p))}<strong>${esc(p.titulo)}</strong><span class="mono">${esc(p.cod)}</span>
         <span class="sub"><span>${esc(p.tipo)}</span>${ls.map(l => `<b>${esc(l.nome)}</b>`).join("")}</span></button>`;
-    }).join("") || '<p class="lista-vazia versal">No projects</p>';
+    }).join("") + (!todos && V.length > LIMITE ? `<button type="button" class="mais-f" id="mais-f">Show all ${V.length} projects</button>` : "") || '<p class="lista-vazia versal">No projects</p>';
     if (aba === "r") html = comRec.sort((a, b) => b.recs.length - a.recs.length || a.nome.localeCompare(b.nome)).map(l =>
-      `<button type="button" class="linha-f" data-chave="${esc(l.chave)}"><i style="--c:${l.recs[0].p.realm.hex}"></i><strong>${esc(l.nome)}</strong><span class="mono">${String(l.recs.length).padStart(2, "0")}</span>
-        <span class="sub">${l.recs.map(x => `<span><b>${esc(x.r.reconhecimento)}</b> · ${esc(x.r.titulo)}</span>`).join("")}</span></button>`).join("") || '<p class="lista-vazia versal">No recognitions</p>';
+      `<button type="button" class="linha-f" data-chave="${esc(l.chave)}">${quadros([...new Map(l.recs.flatMap(x => realmsDe(x.p)).map(r => [r.nome, r])).values()])}<strong>${esc(l.nome)}</strong><span class="mono">${String(l.recs.length).padStart(2, "0")}</span>
+        <span class="sub">${l.recs.slice(0, 3).map(x => `<span><b>${esc(x.r.reconhecimento)}</b> · ${esc(x.r.titulo)}</span>`).join("")}${l.recs.length > 3 ? `<span>+${l.recs.length - 3} more</span>` : ""}</span></button>`).join("") || '<p class="lista-vazia versal">No recognitions</p>';
     $("lista").innerHTML = html;
     $("lista").hidden = !aba;
   }
   $("abas-f").addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
-    aba = aba === b.dataset.a ? null : b.dataset.a; globo.fecharEscolha(); filtros(visiveis());
+    aba = aba === b.dataset.a ? null : b.dataset.a; todos = false; globo.fecharEscolha(); filtros(visiveis());
     if (aba) centrarEm(visiveis(), aba);
   });
   $("lista").addEventListener("click", e => {
+    if (e.target.closest("#mais-f")) { todos = true; return filtros(visiveis()); }
     const b = e.target.closest(".linha-f"); if (!b) return;
     const ch = b.dataset.chave;
     if (!ch) return abrir(b.dataset.p); // projeto só global, sem lugar no mapa
-    aba = null; filtros(visiveis());
+    if (innerWidth <= 860) { aba = null; filtros(visiveis()); } // no celular a lista sai da frente do mapa
     globo.irPara(ch, b.dataset.p);
   });
 
@@ -704,7 +719,7 @@ function iniciar(HOST) {
         p.recs.forEach(r => r.lugar && add(r.lugar, { p, r }, "r"));
         p.lugares.forEach(lg => add(lg, { p }, "p"));
       });
-      const novo = [...g.values()].map(m => Object.assign(m, { cor: m.itens[0].p.realm.hex }));
+      const novo = [...g.values()].map(m => Object.assign(m, { cor: m.itens[0].p.cor || m.itens[0].p.realm.hex }));
       // áreas primeiro, reconhecimentos por cima
       novo.sort((a, b) => (a.forma === "r") - (b.forma === "r"));
       if (anim && !anim.meioFeito) pendente = novo; else marc = novo;
@@ -836,7 +851,7 @@ function iniciar(HOST) {
       const es = $("escolha"), m0 = ms[0];
       es.innerHTML = `<div class="escolha-topo"><span class="versal">${esc(m0.nome)}</span><span class="mono">${plural(lista.length, "project", "projects")}</span></div><div class="opcoes">` +
         lista.map(({ p, recs, area }) => `<button type="button" class="opc" data-p="${esc(p.cod)}" style="--t:${p.realm.t};--tv:${p.realm.tv};--stv:${p.realm.sobreVivo || "var(--sobre-faixa)"}">
-          <span class="opc-cabeca"><strong>${esc(p.titulo)}</strong></span>
+          <span class="opc-cabeca"><strong>${esc(p.titulo)}</strong>${quadros(realmsDe(p))}</span>
           <span class="opc-corpo">${p.imagens[0] ? `<img src="${esc(p.imagens[0])}" alt="">` : '<span class="opc-sem"></span>'}
             <span class="esc-linhas"><span class="etq etq-grot" style="--t:${p.realm.t}">${esc(p.tipo)}</span>${recs.map(r => `<span><b>${esc(r.reconhecimento)}</b> · ${esc(r.titulo)} · ${esc(r.ano)}</span>`).join("")}${area ? "<span>Area</span>" : ""}</span></span>
         </button>`).join("") + "</div>";
