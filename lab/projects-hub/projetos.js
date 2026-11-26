@@ -53,7 +53,6 @@ const NUMEROS = [
   { texto: "{n} awards", um: "{n} award", n: "vitorias" },
   { texto: "{n} international accolades", um: "{n} international accolade", n: "internacionais" },
   { texto: "reaching more than {n} countries", um: "reaching {n} country", n: "paises" },
-  { texto: "+{n} years with gira.", n: 10 },
   { texto: "+{n} years in technology and innovation", n: 15 },
   { texto: "+{n} years in futures design", n: 7 },
   { texto: "+{n} years studying the Post-AI futures", n: 4 },
@@ -167,7 +166,7 @@ a{color:inherit}
 .palco{position:relative}
 .globo{position:relative;height:min(82vh,820px);min-height:460px;overflow:hidden}
 .numeros{position:absolute;z-index:5;right:var(--passo-3);top:var(--passo-3);width:min(300px,26vw);display:flex;flex-direction:column;pointer-events:none}
-.numero{padding:7px 0 8px;border-top:1px solid var(--fio)}
+.numero{padding:7px 0 8px;border-top:1px solid var(--fio);text-align:right}
 .numero:last-child{border-bottom:1px solid var(--fio)}
 .numero b,.numero span{transition:opacity var(--tempo-fecha) var(--curva-portal),transform var(--tempo-fecha) var(--curva-portal);transition-delay:var(--d,0ms)}
 .numero.sai b,.numero.sai span{opacity:0;transform:translateY(-10px)}
@@ -327,7 +326,7 @@ a{color:inherit}
 
 @media (max-width:860px){
   .numeros{position:static;width:auto;padding:var(--passo-3) var(--passo-2) 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--passo-2);align-items:start}
-  .numero{border-bottom:1px solid var(--fio)}
+  .numero{border-bottom:1px solid var(--fio);text-align:left}
   .abas-f{flex-wrap:wrap}
   .globo{height:72vh;min-height:420px}
   .legenda{left:var(--passo-2);bottom:76px}
