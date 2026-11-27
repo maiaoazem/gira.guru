@@ -14,7 +14,7 @@
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Google Sans",Arial,sans-serif;overflow-x:clip}
-.wrap{max-width:1240px;margin:0 auto;padding:28px max(4vw,16px) 56px}
+.wrap{max-width:1320px;margin:0 auto;padding:28px max(4vw,16px) 56px}
 header{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:end;justify-content:space-between;margin-bottom:20px}
 h1{font-size:clamp(28px,3.4vw,40px);font-weight:500;letter-spacing:-.5px;line-height:1.05;margin:0}
 .meta{color:var(--soft);margin:6px 0 0;font-size:15px}
@@ -31,7 +31,7 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0}
 .chip i{width:10px;height:10px;border-radius:5px}
 .chip[aria-pressed=true]{background:var(--chip);border-color:var(--ink)}
 .status{min-height:24px;color:var(--soft);font-size:14px;margin:-8px 0 14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:24px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(0,376px));justify-content:center;gap:28px}
 .card{position:relative;display:block;width:100%;height:0;padding:0 0 140.952% 0;perspective:1400px;cursor:pointer;border:0;background:none;border-radius:14px}
 .flip{position:absolute;top:0;left:0;width:100%;height:100%;-webkit-transform-style:preserve-3d;transition:transform .6s cubic-bezier(.3,.7,.2,1);transform-style:preserve-3d}
 .card.back .flip{transform:rotateY(180deg)}
@@ -43,7 +43,7 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0}
 .help{margin-top:36px;color:var(--soft);font-size:14px;max-width:760px}
 .help code{background:var(--chip);padding:1px 6px;border-radius:6px;font-size:13px}
 @media(prefers-reduced-motion:reduce){.flip{transition:none}}
-@media(max-width:600px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.btn{height:44px;padding:0 14px}}
+@media(max-width:600px){.grid{grid-template-columns:repeat(auto-fill,minmax(0,376px));gap:14px}.btn{height:44px;padding:0 14px}}
 </style></head><body>
 <nav class="lab-nav" aria-label="Navegação">
 <style>
