@@ -5,7 +5,7 @@
    Uso em qualquer página da gira.:
 
      <ocp-outline></ocp-outline>
-     <script src="/lab/outlines/outline.js?v=20" defer></script>
+     <script src="/lab/outlines/outline.js?v=22" defer></script>
 
    Atributos de <ocp-outline>:
      filme="RVL"                    qual filme abrir (sem ele: o do endereço #RVL, ou o primeiro do índice)
@@ -300,6 +300,18 @@ function textoCena(desc) {
 
 /* ================= ESTILO ================= */
 const ESTILO = `
+/* carregando: o loading padrão. Uma fagulha do laborateliê no meio da tela: os dois triângulos giram em cortes,
+   reaparecendo em outros ângulos e montando várias fagulhas; [loading] embaixo */
+.ocp-carregando{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:var(--fundo,#fbf8f4);color:var(--tinta,#141414)}
+.ocp-carregando svg{width:56px;height:56px;overflow:visible}
+.ocp-carregando path{fill:currentColor;transform-box:fill-box;transform-origin:center;animation:ocp-corte-a 2400ms step-end infinite}
+.ocp-carregando .t2{animation-name:ocp-corte-b}
+.ocp-carregando-texto{font-family:"Courier Prime","Courier New",monospace;font-size:14px;line-height:1.4;color:var(--texto-suave,#5c5852)}
+/* cortes secos: cada triângulo salta para outro ângulo, sem passar pelo meio */
+@keyframes ocp-corte-a{0%{transform:rotate(0)}12.5%{transform:rotate(40deg)}25%{transform:rotate(-25deg)}37.5%{transform:rotate(90deg)}50%{transform:rotate(15deg)}62.5%{transform:rotate(-60deg)}75%{transform:rotate(120deg)}87.5%{transform:rotate(-15deg)}}
+@keyframes ocp-corte-b{0%{transform:rotate(0)}12.5%{transform:rotate(-35deg)}25%{transform:rotate(20deg)}37.5%{transform:rotate(-80deg)}50%{transform:rotate(45deg)}62.5%{transform:rotate(10deg)}75%{transform:rotate(-110deg)}87.5%{transform:rotate(30deg)}}
+@media (prefers-reduced-motion:reduce){.ocp-carregando path{animation:none}}
+
 :host,.raiz{
   --fundo:#fbf8f4; --texto:#141414; --texto-suave:#5c5852; --fio:#141414;
   --sobre-faixa:#141414; --papel:#fbf8f4; --tinta:#141414; --mata:#1b211d;
@@ -579,10 +591,16 @@ function suaviza(v, sigma) {
   });
 }
 
+/* ================= CARREGANDO (loading padrão do DS) ================= */
+const CARREGANDO = `<div class="ocp-carregando" role="status" aria-live="polite" aria-label="Carregando">
+  <svg viewBox="0 0 100 100" aria-hidden="true"><path class="t1" d="M53 8L91 72H15Z"/><path class="t2" d="M43 94L9 36H77Z"/></svg>
+  <p class="ocp-carregando-texto">[loading]</p>
+</div>`;
+
 /* ================= COMPONENTE ================= */
 function iniciar(HOST) {
   const ROOT = HOST.attachShadow({ mode: "open" });
-  ROOT.innerHTML = `<style>${ESTILO}</style><div class="raiz" lang="pt-BR"><p class="estado mono">carregando o filme…</p></div>`;
+  ROOT.innerHTML = `<style>${ESTILO}</style><div class="raiz" lang="pt-BR">${CARREGANDO}</div>`;
   const RAIZ = ROOT.querySelector(".raiz");
   const reduz = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const urlsIndice = HOST.hasAttribute("indice")
@@ -596,6 +614,7 @@ function iniciar(HOST) {
 
   function abrir(codigo) {
     if (ctl) ctl.abort();
+    if (FILMES.length && RAIZ.querySelector(".cabeco")) { RAIZ.innerHTML = CARREGANDO; scrollTo({ top: Math.max(0, HOST.getBoundingClientRect().top + scrollY) }); }
     ctl = new AbortController();
     const sinal = ctl.signal;
     carregar(FILMES, codigo).then(F => {
