@@ -171,29 +171,27 @@ function solidTags(list,gs,p,x0,maxW){const th=gs*2.05,gap=12;let x=0,y=0,b='';
  return {b,h:y+th}}
 const TOP=164;
 function headSizes(card){let r;
- for(let k=0;k<10;k++){const ts=92-k*2,ds=34-k*.5;
-  const tl=wrap(card.ten.toLocaleLowerCase('pt-BR'),ts,700,IW),dl=wrap(card.desc,ds,400,IW);
-  const y=TOP+tl.length*ts+24+dl.length*ds*1.36;r={ts,ds,tl,dl,end:y};if(y+40<=BAND)return r}
+ for(let k=0;k<12;k++){const ts=104-k*3;const tl=wrap(card.ten.toLocaleLowerCase('pt-BR'),ts,700,IW);
+  r={ts,tl,end:TOP+tl.length*ts};if(r.end+48<=BAND)return r}
  return r}
-function head2(card,p,label,withDesc){const S=headSizes(card);let y=withDesc?TOP:Math.max(TOP,BAND-56-S.tl.length*S.ts),b='';
- b+=textBlock(S.tl,PAD,y+S.ts*.78,S.ts,700,INK,1.0,' letter-spacing="-1"');y+=S.tl.length*S.ts+24;
- if(withDesc){b+=textBlock(S.dl,PAD,y+S.ds*.8,S.ds,400,INK,1.36,'',true);y+=S.dl.length*S.ds*1.36}
- const bh=Math.max(BAND,S.end+40);
- return {h:bh,svg:band2(p,bh)+logoEG(78)+tagPill(label,66)+b}}
-function front2(card,p,si){const bottom=H-170;const H2=head2(card,p,'tendência',true);let last;
- for(let k=0;k<10;k++){
-  const gs=Math.max(MIN+2,31-k*.5),fs=Math.max(MIN+2,31-k*.5),ns=Math.max(MIN+4,35-k*.5);
-  let b='';let y=H2.h+56;
+function head2(card,p,label){const S=headSizes(card);const y=Math.max(TOP,BAND-52-S.tl.length*S.ts);
+ const bh=Math.max(BAND,S.end+48);
+ return {h:bh,svg:band2(p,bh)+logoEG(78)+(label?tagPill(label,66):'')+textBlock(S.tl,PAD,y+S.ts*.78,S.ts,700,INK,1.0,' letter-spacing="-1"')}}
+function front2(card,p,si){const limit=H-200;const H2=head2(card,p,'tendência');let last;
+ for(let k=0;k<12;k++){
+  const ds=Math.max(MIN+2,35-k*.6),gs=Math.max(MIN+2,31-k*.4),fs=Math.max(MIN+2,31-k*.4),ns=Math.max(MIN+4,35-k*.4),gap=Math.max(28,46-k*2);
+  let b='';let y=H2.h+60;
+  const dl=wrap(card.desc,ds,400,IW);b+=textBlock(dl,PAD,y+ds*.8,ds,400,INK,1.38,'',true);y+=dl.length*ds*1.38+gap;
   if(card.sinais.length){b+=`<text x="${PAD}" y="${y+22}" font-family="${FONT}" font-weight="700" font-size="28" fill="${p.d}">Sinais</text>`;y+=50;
-   const T=solidTags(card.sinais,gs,p,PAD,IW);b+=`<g transform="translate(0 ${y.toFixed(1)})">${T.b}</g>`;y+=T.h}
-  const tx=PAD+96,tw2=IW-96;const nl=wrap(card.cen.toUpperCase(),ns,700,tw2),dl=wrap(card.def,fs,400,tw2);
-  const ch=30+16+nl.length*ns*1.12+14+dl.length*fs*1.38;const top=bottom-ch;
+   const T=solidTags(card.sinais,gs,p,PAD,IW);b+=`<g transform="translate(0 ${y.toFixed(1)})">${T.b}</g>`;y+=T.h+gap+8}
+  const tx=PAD+96,tw2=IW-96;const nl=wrap(card.cen.toUpperCase(),ns,700,tw2),fl=wrap(card.def,fs,400,tw2);const top=y;
   b+=spark(PAD,top+4,72,p.c)+`<text x="${tx}" y="${top+22}" font-family="${FONT}" font-weight="700" font-size="24" fill="${p.d}" letter-spacing="1.5">CENÁRIO</text>`+
-   textBlock(nl,tx,top+46+ns*.8,ns,700,INK,1.12,' letter-spacing="0.5"')+textBlock(dl,tx,top+46+nl.length*ns*1.12+14+fs*.8,fs,400,'#3C4043',1.38);
+   textBlock(nl,tx,top+46+ns*.8,ns,700,INK,1.12,' letter-spacing="0.5"')+textBlock(fl,tx,top+46+nl.length*ns*1.12+14+fs*.8,fs,400,'#3C4043',1.38);
+  y=top+46+nl.length*ns*1.12+14+fl.length*fs*1.38;
   last=svg2(H2.svg+b+footer(card.id,p,'frente'));
-  if(y+44<=top)return last}
+  if(y<=limit)return last}
  overflow.push(card.id+' frente');return last}
-function back2(card,p){const bottom=H-170;const H2=head2(card,p,'case',false);let last;
+function back2(card,p){const bottom=H-180;const H2=head2(card,p,'');let last;
  for(let k=0;k<12;k++){
   const cs=Math.max(44,62-k*2),ds=Math.max(MIN+2,34-k*.6);
   let y=H2.h+64,b='';
