@@ -5,7 +5,7 @@
    Uso em qualquer página da gira.:
 
      <ocp-outline></ocp-outline>
-     <script src="/lab/outlines/outline.js?v=22" defer></script>
+     <script src="/lab/outlines/outline.js?v=23" defer></script>
 
    Atributos de <ocp-outline>:
      filme="RVL"                    qual filme abrir (sem ele: o do endereço #RVL, ou o primeiro do índice)
@@ -17,7 +17,7 @@
      movie-code · o código do filme, usado no endereço (#RVL) · Filme · Gênero · Roteiristas (separados por ;)
      Sinopse · Logline · Ano · Image (arquivo na pasta de imagens) · Link (o documento do outline)
      combo-cor (1 a 5) · outline-csv (nome do arquivo na pasta /lab/outlines/, ou um link CSV completo)
-     project-code + recognitions-csv: os prêmios do roteiro (as linhas do CSV de reconhecimentos
+     project-code: os prêmios do roteiro (as linhas do CSV de reconhecimentos, RECONHECIMENTOS abaixo,
      cuja coluna project é o project-code viram laureis: recognition, title, category, country, year)
      Opcionais: ordem · Duração. Sem "ordem", vale a ordem das linhas.
      Sem "Outline", vale OUTLINE (a aba padrão). Se a aba de outline tiver uma coluna movie-code,
@@ -77,6 +77,9 @@ const BASE_IMAGENS = "https://gira.guru/lab/repo/images/"; // pasta das imagens 
 const INDICE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7xAMwCNcFR8ih2nDzPaJPSjN0h96rzF5_EgGqLT1IeCcfA1CRHpY9iHUf1sl7gxTa6r32bEIOoYp3/pub?gid=1342308574&single=true&output=csv";
 const OUTLINE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7xAMwCNcFR8ih2nDzPaJPSjN0h96rzF5_EgGqLT1IeCcfA1CRHpY9iHUf1sl7gxTa6r32bEIOoYp3/pub?gid=0&single=true&output=csv";
 const RESERVA = "filmes.csv";
+// Reconhecimentos de todos os projetos (planilha publicada como CSV). Vale para todos os filmes;
+// uma coluna recognitions-csv no índice, se preenchida, troca só para aquele filme.
+const RECONHECIMENTOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRHS_E6qH44g4yZ6OEt8Vvqh5S4KGSmCEq4H5tQt6bVwQU1jBu6C3qrdowUGY_1WplSl_SDvGLihpQd/pub?gid=1180840986&single=true&output=csv";
 const OUTLINES = "/lab/outlines/"; // pasta fixa dos CSVs de outline (outline-csv com só o nome do arquivo busca aqui) // cópia local do índice, ao lado deste arquivo, usada se a planilha não responder
 const ATOS_MAX_NOMES = 6; // com mais atos que isso (ou sem espaço para o nome), a linha do tempo mostra só o número: 1, 2, 3…
 const DESTAQUE_MAX = 100; // primeira e última frase em destaque só até este número de caracteres
@@ -170,7 +173,7 @@ async function lerIndice(urls, pastaOutlines) {
         duracao: f.duracao ? num(f.duracao) : null,
         outline: (() => { const o = f["outline-csv"] || f.outline || ""; return o ? (/^[a-z]+:\/\//i.test(o) ? o : new URL(o, pastaOutlines).href) : OUTLINE; })(),
         projeto: (f["project-code"] || f.projeto || "").trim(),
-        premios: f["recognitions-csv"] || f.reconhecimentos || "",
+        premios: f["recognitions-csv"] || f.reconhecimentos || RECONHECIMENTOS,
       }));
       return filmes;
     } catch (e) { erro = e; }
