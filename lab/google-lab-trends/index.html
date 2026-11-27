@@ -32,10 +32,10 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0}
 .chip[aria-pressed=true]{background:var(--chip);border-color:var(--ink)}
 .status{min-height:24px;color:var(--soft);font-size:14px;margin:-8px 0 14px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:24px}
-.card{position:relative;aspect-ratio:105/148;perspective:1400px;cursor:pointer;border:0;padding:0;background:none;border-radius:14px}
-.flip{position:absolute;inset:0;transition:transform .6s cubic-bezier(.3,.7,.2,1);transform-style:preserve-3d}
+.card{position:relative;display:block;width:100%;height:0;padding:0 0 140.952% 0;perspective:1400px;cursor:pointer;border:0;background:none;border-radius:14px}
+.flip{position:absolute;top:0;left:0;width:100%;height:100%;-webkit-transform-style:preserve-3d;transition:transform .6s cubic-bezier(.3,.7,.2,1);transform-style:preserve-3d}
 .card.back .flip{transform:rotateY(180deg)}
-.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(60,64,67,.2),0 6px 18px rgba(60,64,67,.12)}
+.face{position:absolute;top:0;left:0;width:100%;height:100%;-webkit-backface-visibility:hidden;backface-visibility:hidden;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(60,64,67,.2),0 6px 18px rgba(60,64,67,.12)}
 .face svg{display:block;width:100%;height:100%}
 .face.b{transform:rotateY(180deg)}
 .under{display:flex;justify-content:space-between;color:var(--soft);font-size:13px;margin-top:8px}
@@ -172,10 +172,11 @@ const grid=document.getElementById('grid'),filters=document.getElementById('filt
 function render(){
  filters.innerHTML=`<button class="chip" aria-pressed="${active===null}" data-c="">Todos (${cards.length})</button>`+cens.map((c,i)=>`<button class="chip" aria-pressed="${active===c}" data-c="${esc(c)}"><i style="background:${PAL[i%PAL.length].c}"></i>${esc(c)} (${cards.filter(x=>x.cen===c).length})</button>`).join('');
  const list=built.filter(x=>active===null||x.c.cen===active);
- grid.innerHTML=list.length?list.map((x,i)=>`<div><button class="card" aria-label="${esc(x.c.id+' · '+x.c.ten)}. Clique para virar."><div class="flip"><div class="face a">${noFont(x.f)}</div><div class="face b">${noFont(x.b)}</div></div></button><div class="under"><span>${esc(x.c.id)}</span><span>${esc(x.c.cen)}</span></div></div>`).join(''):'<p class="empty">Nenhuma carta. Suba um CSV.</p>';
+ grid.innerHTML=list.length?list.map((x,i)=>`<div><div class="card" role="button" tabindex="0" aria-label="${esc(x.c.id+' · '+x.c.ten)}. Clique para virar."><div class="flip"><div class="face a">${noFont(x.f)}</div><div class="face b">${noFont(x.b)}</div></div></div><div class="under"><span>${esc(x.c.id)}</span><span>${esc(x.c.cen)}</span></div></div>`).join(''):'<p class="empty">Nenhuma carta. Suba um CSV.</p>';
  document.getElementById('count').textContent=`${cards.length} cartas · ${cens.length} cenários`}
 filters.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;active=b.dataset.c||null;render()});
 grid.addEventListener('click',e=>{const b=e.target.closest('.card');if(b)b.classList.toggle('back')});
+grid.addEventListener('keydown',e=>{const b=e.target.closest('.card');if(b&&(e.key==='Enter'||e.key===' ')){e.preventDefault();b.classList.toggle('back')}});
 let allBack=false;document.getElementById('flipAll').addEventListener('click',()=>{allBack=!allBack;grid.querySelectorAll('.card').forEach(c=>c.classList.toggle('back',allBack))});
 document.getElementById('csv').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;
  Papa.parse(f,{skipEmptyLines:false,complete:r=>{try{const n=toCards(r.data);if(!n.length)throw new Error('Nenhuma linha com Tendência.');cards=n;active=null;build();status.textContent=`${n.length} cartas carregadas de ${f.name}.`}catch(err){status.textContent='Não consegui ler esse CSV: '+err.message}},error:err=>status.textContent='Erro ao ler o CSV: '+err.message});e.target.value=''});
